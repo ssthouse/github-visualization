@@ -1,7 +1,7 @@
 const GitlabConfig = {
   state: {
-    domainName: '',
-    privateToken: ''
+    domainName: 'https://api.github.com/graphql',
+    privateToken: '-Xu7Geu11Uz95k6dQLjE'
   },
   mutations: {},
   actions: {}

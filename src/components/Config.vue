@@ -8,10 +8,13 @@
 </template>
 
 <script>
+import ProjectDao from './dao/project-dao'
+
 export default {
   name: 'Config',
   data() {
     return {
+      projectDao: new ProjectDao(),
       domain: 'http://product-ci',
       secretToken: '-Xu7Geu11Uz95k6dQLjE'
     }
@@ -23,22 +26,23 @@ export default {
   },
   methods: {
     testConnection() {
-      console.log('test connection')
+      this.projectDao.getAllProjects()
+      // console.log('test connection')
 
-      this.$http
-        .get(this.domain + '/api/v4' + '/projects/all', {
-          params: {
-            private_token: '-Xu7Geu11Uz95k6dQLjE'
-          }
-        })
-        .then(
-          response => {
-            console.log(response.body)
-          },
-          errResponse => {
-            console.log('list projects fail')
-          }
-        )
+      // this.$http
+      //   .get(this.domain + '/api/v4' + '/projects/all', {
+      //     params: {
+      //       private_token: '-Xu7Geu11Uz95k6dQLjE'
+      //     }
+      //   })
+      //   .then(
+      //     response => {
+      //       console.log(response.body)
+      //     },
+      //     errResponse => {
+      //       console.log('list projects fail')
+      //     }
+      //   )
     }
   }
 }
