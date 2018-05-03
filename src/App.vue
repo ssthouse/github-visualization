@@ -20,7 +20,6 @@
       </v-list>
     </v-navigation-drawer>
 
-
     <v-content>
       <v-container fluid>
         <router-view></router-view>
