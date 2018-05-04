@@ -1,5 +1,5 @@
 import store from '@/store/index'
-import axios from '@/plugin/axios'
+import http from '@/plugin/axios'
 
 export default class ProjectDao {
   constructor() {
@@ -16,7 +16,7 @@ export default class ProjectDao {
             }
         }`
     }
-    axios
+    http
       .post('', JSON.stringify(queryJson))
       .then(response => {
         console.log(response.data)
