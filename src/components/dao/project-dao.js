@@ -10,16 +10,31 @@ export default class ProjectDao {
     const baseUrl = this.store.state.gitlabConfig.domainName
     const queryJson = {
       query: `query {
-            viewer {
-                login
-                name
+        user(login: "ssthouse") {
+          avatarUrl
+          name
+          repositories(first: 100){
+            totalCount
+            pageInfo{
+              hasNextPage
+              endCursor
             }
-        }`
+            nodes{
+              id
+            }
+          }
+        }
+      }`
     }
     http
       .post('', JSON.stringify(queryJson))
       .then(response => {
-        console.log(response.data)
+        const user = response.data.data.user
+        // update data in vuex
+        this.store.commit('updateUserInfo', {
+          avatarUrl: user.avatarUrl,
+          repositoryList: user.repositories.nodes
+        })
       })
       .catch(response => {
         console.log('~~~~~~~~~~~~~~~~error get all projects')

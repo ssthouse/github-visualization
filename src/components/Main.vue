@@ -1,6 +1,20 @@
 <template>
   <div>
-    Main page
+    <v-avatar
+      :tile="false"
+      size="120px"
+      class="grey lighten-4"
+    >
+      <img :src="avatarUrl" alt="avatar">
+    </v-avatar>
+
+    <v-list>
+      <template v-for="item in repositoryList">
+        <div>
+          <span>{{item.id}}</span>
+        </div>
+      </template>
+    </v-list>
   </div>
 </template>
 
@@ -8,7 +22,14 @@
 export default {
   name: 'Main',
   data() {
-    return {
+    return {}
+  },
+  computed: {
+    avatarUrl() {
+      return this.$store.state.userInfo.avatarUrl
+    },
+    repositoryList() {
+      return this.$store.state.userInfo.repositoryList
     }
   }
 }
