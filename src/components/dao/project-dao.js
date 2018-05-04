@@ -7,7 +7,6 @@ export default class ProjectDao {
   }
 
   getAllProjects() {
-    const baseUrl = this.store.state.gitlabConfig.domainName
     const queryJson = {
       query: `query {
         user(login: "ssthouse") {
@@ -21,6 +20,7 @@ export default class ProjectDao {
             }
             nodes{
               id
+              name
             }
           }
         }

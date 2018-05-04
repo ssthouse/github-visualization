@@ -10,8 +10,8 @@
 
     <v-list>
       <template v-for="item in repositoryList">
-        <div>
-          <span>{{item.id}}</span>
+        <div :key="item.id">
+          <span>{{item.name}}</span>
         </div>
       </template>
     </v-list>

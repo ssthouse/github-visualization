@@ -20,8 +20,6 @@ npm run build --report
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-personal access token:
-83f30f4332b2371486791b2fadd8f677f476a8c2
 
 
 
