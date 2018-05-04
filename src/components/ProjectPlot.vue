@@ -24,6 +24,7 @@ export default {
   },
   mounted() {
     console.log(this.repositoryList)
+    console.log(this.$d3.schemeSet1[1])
   }
 }
 </script>
