@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div>
+      <v-btn @click="showProjects">show projects</v-btn>
+    </div>
     <v-avatar
       :tile="false"
       size="120px"
@@ -8,21 +11,21 @@
       <img :src="avatarUrl" alt="avatar">
     </v-avatar>
 
-    <v-list>
-      <template v-for="item in repositoryList">
-        <div :key="item.id">
-          <span>{{item.name}}</span>
-        </div>
-      </template>
-    </v-list>
+    <project-plot></project-plot>
   </div>
 </template>
 
 <script>
+import ProjectPlot from './ProjectPlot'
+import ProjectDao from './dao/project-dao'
+
 export default {
   name: 'Main',
+  components: { 'project-plot': ProjectPlot },
   data() {
-    return {}
+    return {
+      projectDao: new ProjectDao()
+    }
   },
   computed: {
     avatarUrl() {
@@ -30,6 +33,11 @@ export default {
     },
     repositoryList() {
       return this.$store.state.userInfo.repositoryList
+    }
+  },
+  methods: {
+    showProjects() {
+      this.projectDao.getAllProjects()
     }
   }
 }
