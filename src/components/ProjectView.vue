@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import { textwrap } from 'd3-textwrap'
-
 export default {
   name: 'ProjectPlot',
   data() {
