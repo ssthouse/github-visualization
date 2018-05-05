@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import ProjectPlot from './ProjectPlot'
+import ProjectPlot from './ProjectView'
 import ProjectDao from './dao/projectDao'
 
 export default {
