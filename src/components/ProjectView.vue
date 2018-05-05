@@ -1,8 +1,13 @@
 <template>
   <div>
     <v-btn @click="update">Update</v-btn>
-    <svg id="projectViewSvg"></svg>
-     <v-list>
+
+    <div style="width: 100%; height: 500px; position: relative;">
+      <svg id="projectViewSvg"></svg>
+      <div id="projectViewDiv"></div>
+    </div>
+
+    <v-list>
       <template v-for="item in repositoryList">
         <div :key="item.id">
           <span>{{`${item.name}   ~   ${item.count}`}}</span>
@@ -13,11 +18,16 @@
 </template>
 
 <script>
+import { textwrap } from 'd3-textwrap'
+
 export default {
   name: 'ProjectPlot',
   data() {
     return {
-      g: null
+      g: null,
+      areaScale: null,
+      textScale: null,
+      div: null
     }
   },
   computed: {
@@ -32,8 +42,25 @@ export default {
       }
       const svg = this.$d3.select('#projectViewSvg')
       this.g = svg.append('g')
+      this.div = this.$d3.select('#projectViewDiv')
     },
     startDisplay() {
+      this.areaScale = this.$d3
+        .scaleSqrt()
+        .domain([
+          this.$d3.min(this.repositoryList, d => d.count),
+          this.$d3.max(this.repositoryList, d => d.count)
+        ])
+        .range([20, 80])
+
+      this.textScale = this.$d3
+        .scaleSqrt()
+        .domain([
+          this.$d3.min(this.repositoryList, d => d.count),
+          this.$d3.max(this.repositoryList, d => d.count)
+        ])
+        .range([4, 24])
+
       const self = this
       const tick = function() {
         const repositoryCircles = self.g
@@ -45,26 +72,31 @@ export default {
           .merge(repositoryCircles)
           .attr('cx', d => d.x)
           .attr('cy', d => d.y)
-          .attr('r', d => d.count / 5)
+          .attr('r', d => self.areaScale(d.count))
         repositoryCircles.exit().remove()
 
-        const texts = self.g.selectAll('text').data(self.repositoryList)
+        const texts = self.div.selectAll('span').data(self.repositoryList)
         texts
           .enter()
-          .append('text')
+          .append('span')
           .merge(texts)
-          .attr('x', d => d.x)
-          .attr('y', d => d.y)
           .text(d => d.name)
+          .style('font-size', d => self.textScale(d.count) + 'px')
+          .style('left', d => d.x - 25 + 'px')
+          .style('top', d => d.y - 10 + 'px')
         texts.exit().remove()
       }
 
-      const simulation = this.$d3
+      // start simulation
+      this.$d3
         .forceSimulation(this.repositoryList)
         .force('charge', this.$d3.forceManyBody())
-        .force('collide', this.$d3.forceCollide().radius(d => d.count / 5))
-        .force('forceX', this.$d3.forceX(200))
-        .force('forceY', this.$d3.forceY(200))
+        .force(
+          'collide',
+          this.$d3.forceCollide().radius(d => this.areaScale(d.count) + 3)
+        )
+        .force('forceX', this.$d3.forceX(300).strength(0.5))
+        .force('forceY', this.$d3.forceY(200).strength(0.5))
         .on('tick', tick)
     },
     update() {
@@ -74,6 +106,7 @@ export default {
   },
   mounted() {
     console.log('get data in mounted state' + this.repositoryList)
+    window.vue = this
   }
 }
 </script>
@@ -89,10 +122,23 @@ export default {
   }
 
   text {
+    font-size: 6px;
     fill: white;
-    stroke: white;
-    font-size: 11px;
     text-anchor: middle;
+    font-family: 'Arial';
+  }
+}
+
+#projectViewDiv {
+  width: 100%;
+  height: 500px;
+
+  span {
+    position: absolute;
+    display: block;
+    width: 50px;
+    word-wrap: break-word;
+    color: white;
   }
 }
 </style>
