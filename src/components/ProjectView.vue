@@ -23,6 +23,7 @@ export default {
   data() {
     return {
       g: null,
+      height: 500,
       areaScale: null,
       textScale: null,
       div: null
@@ -80,8 +81,9 @@ export default {
           .merge(texts)
           .text(d => d.name)
           .style('font-size', d => self.textScale(d.count) + 'px')
-          .style('left', d => d.x - 25 + 'px')
-          .style('top', d => d.y - 10 + 'px')
+          .style('left', d => d.x - self.areaScale(d.count) * 1.5 / 2 + 'px')
+          .style('top', d => d.y - self.textScale(d.count) / 2 + 'px')
+          .style('width', d => self.areaScale(d.count) * 1.5 + 'px')
         texts.exit().remove()
       }
 
@@ -111,9 +113,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
+@svg-height: 500px;
 #projectViewSvg {
   width: 100%;
-  height: 500px;
+  height: @svg-height;
 
   circle {
     fill: teal;
@@ -129,12 +132,11 @@ export default {
 
 #projectViewDiv {
   width: 100%;
-  height: 500px;
+  height: @svg-height;
 
   span {
     position: absolute;
     display: block;
-    width: 50px;
     word-wrap: break-word;
     color: white;
   }
