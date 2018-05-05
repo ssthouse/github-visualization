@@ -17,7 +17,7 @@
 
 <script>
 import ProjectPlot from './ProjectPlot'
-import ProjectDao from './dao/project-dao'
+import ProjectDao from './dao/projectDao'
 
 export default {
   name: 'Main',

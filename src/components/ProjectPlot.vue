@@ -19,13 +19,10 @@ export default {
   },
   computed: {
     repositoryList() {
-      return this.$store.state.userinfo.repositoryList
+      return this.$store.state.userinfo.repositoryBeanList
     }
   },
-  mounted() {
-    console.log(this.repositoryList)
-    console.log(this.$d3.schemeSet1[1])
-  }
+  mounted() {}
 }
 </script>
 

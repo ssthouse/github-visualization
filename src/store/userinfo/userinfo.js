@@ -3,13 +3,14 @@ const UserInfo = {
     avatarUrl: 'https://avatars3.githubusercontent.com/u/10973821?v=4',
     follwerList: [],
     followingList: [],
-    repositoryList: []
+    repositoryBeanList: []
   },
   mutations: {
     updateUserInfo(state, userInfo) {
-      console.log(state)
       state.avatarUrl = userInfo.avatarUrl
-      state.repositoryList = userInfo.repositoryList
+    },
+    updateRepositoryBeanList(state, repositoryBeanList) {
+      state.repositoryBeanList = repositoryBeanList
     }
   },
   actions: {}

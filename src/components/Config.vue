@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import ProjectDao from './dao/project-dao'
+import ProjectDao from './dao/projectDao'
 
 export default {
   name: 'Config',
