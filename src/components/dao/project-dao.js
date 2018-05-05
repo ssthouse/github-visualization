@@ -21,6 +21,15 @@ export default class ProjectDao {
             nodes{
               id
               name
+              ref(qualifiedName: "master") {
+                target {
+                  ... on Commit {
+                    history {
+                      totalCount
+                    }
+                  }
+                }
+              }
             }
           }
         }

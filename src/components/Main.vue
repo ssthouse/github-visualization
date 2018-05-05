@@ -29,10 +29,7 @@ export default {
   },
   computed: {
     avatarUrl() {
-      return this.$store.state.userInfo.avatarUrl
-    },
-    repositoryList() {
-      return this.$store.state.userInfo.repositoryList
+      return this.$store.state.userinfo.avatarUrl
     }
   },
   methods: {

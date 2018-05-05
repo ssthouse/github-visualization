@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     repositoryList() {
-      return this.$store.state.userInfo.repositoryList
+      return this.$store.state.userinfo.repositoryList
     }
   },
   mounted() {

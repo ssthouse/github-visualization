@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import GitlabConfig from './gitlab_config.js'
-import UserInfo from './user_info'
+import gitlabConfig from './gitlab/gitlabConfig'
+import userinfo from './userinfo/userinfo'
 
 Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
-    gitlabConfig: GitlabConfig,
-    userInfo: UserInfo
+    gitlabConfig,
+    userinfo
   }
 })
 
