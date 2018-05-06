@@ -1,19 +1,9 @@
 <template>
   <div>
-    <v-btn @click="update">Update</v-btn>
-
     <div id="projectViewContainer">
       <svg id="projectViewSvg"></svg>
       <div id="projectViewDiv"></div>
     </div>
-
-    <v-list>
-      <template v-for="item in repositoryList">
-        <div :key="item.id">
-          <span>{{`${item.name}   ~   ${item.count}`}}</span>
-        </div>
-      </template>
-    </v-list>
   </div>
 </template>
 
@@ -63,6 +53,18 @@ export default {
 
       const self = this
       const tick = function() {
+        const texts = self.div.selectAll('span').data(self.repositoryList)
+        texts
+          .enter()
+          .append('span')
+          .merge(texts)
+          .text(d => d.name)
+          .style('font-size', d => self.textScale(d.count) + 'px')
+          .style('left', d => d.x - self.areaScale(d.count) * 1.5 / 2.0 + 'px')
+          .style('top', d => d.y - self.textScale(d.count) / 2.0 + 'px')
+          .style('width', d => self.areaScale(d.count) * 1.5 + 'px')
+        texts.exit().remove()
+
         const repositoryCircles = self.g
           .selectAll('circle')
           .data(self.repositoryList)
@@ -75,18 +77,6 @@ export default {
           .attr('r', d => self.areaScale(d.count))
           .call(self.enableDragFunc())
         repositoryCircles.exit().remove()
-
-        const texts = self.div.selectAll('span').data(self.repositoryList)
-        texts
-          .enter()
-          .append('span')
-          .merge(texts)
-          .text(d => d.name)
-          .style('font-size', d => self.textScale(d.count) + 'px')
-          .style('left', d => d.x - self.areaScale(d.count) * 1.5 / 2 + 'px')
-          .style('top', d => d.y - self.textScale(d.count) / 2 + 'px')
-          .style('width', d => self.areaScale(d.count) * 1.5 + 'px')
-        texts.exit().remove()
       }
 
       // start simulation
@@ -126,6 +116,14 @@ export default {
     update() {
       this.initChartContainer()
       this.startDisplay()
+    }
+  },
+  watch: {
+    '$store.state.userinfo.repositoryBeanList': {
+      handler: function(newer, older) {
+        this.update()
+      },
+      deep: true // 开启深度监听
     }
   },
   mounted() {

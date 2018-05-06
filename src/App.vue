@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <v-navigation-drawer app>
-
+    <v-navigation-drawer id="drawerMenu" app>
       <v-toolbar flat>
         Gitlab Dashboard
       </v-toolbar>
@@ -49,6 +48,10 @@ export default {
 </script>
 
 <style>
+#drawerMenu {
+  background-color: #eeeeee;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
