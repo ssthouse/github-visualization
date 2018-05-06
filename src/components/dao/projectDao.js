@@ -15,6 +15,9 @@ export default class ProjectDao {
     const nodes = data.user.repositories.nodes
     for (let i = 0; i < nodes.length; i++) {
       const curRepositpry = nodes[i]
+      if (!curRepositpry.ref) {
+        continue
+      }
       repositoryBeanList.push(
         new RepositoryBean(
           curRepositpry.name,
@@ -26,9 +29,10 @@ export default class ProjectDao {
   }
 
   getAllProjects() {
+    const username = this.store.state.userinfo.username
     const queryJson = {
       query: `query {
-        user(login: "ssthouse") {
+        user(login: "${username}") {
           avatarUrl
           name
           repositories(first: 100){

@@ -1,8 +1,13 @@
 <template>
   <div>
-    <div>
-      <v-btn @click="showProjects">show projects</v-btn>
-    </div>
+    <v-layout row wrap>
+      <v-flex xs8>
+        <v-text-field label="github usename" v-model="username"></v-text-field>
+      </v-flex>
+      <v-flex xs4>
+        <v-btn @click="showProjects">show projects</v-btn>
+      </v-flex>
+    </v-layout>
     <v-avatar
       :tile="false"
       size="120px"
@@ -24,7 +29,8 @@ export default {
   components: { 'project-plot': ProjectPlot },
   data() {
     return {
-      projectDao: new ProjectDao()
+      projectDao: new ProjectDao(),
+      username: ''
     }
   },
   computed: {
@@ -34,6 +40,7 @@ export default {
   },
   methods: {
     showProjects() {
+      this.$store.commit('updateUsername', this.username)
       this.projectDao.getAllProjects()
     }
   }
