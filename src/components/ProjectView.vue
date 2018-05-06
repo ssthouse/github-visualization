@@ -127,8 +127,7 @@ export default {
     }
   },
   mounted() {
-    console.log('get data in mounted state' + this.repositoryList)
-    window.vue = this
+    this.update()
   }
 }
 </script>
