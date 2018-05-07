@@ -17,6 +17,7 @@ export default {
       areaScale: null,
       textScale: null,
       simulation: null,
+      zoomFunc: null,
       div: null
     }
   },
@@ -53,6 +54,8 @@ export default {
 
       const self = this
       const tick = function() {
+        const curTransform = self.$d3.zoomTransform(self.div)
+        console.log('tick!!!')
         const texts = self.div.selectAll('span').data(self.repositoryList)
         texts
           .enter()
@@ -60,8 +63,17 @@ export default {
           .merge(texts)
           .text(d => d.name)
           .style('font-size', d => self.textScale(d.count) + 'px')
-          .style('left', d => d.x - self.areaScale(d.count) * 1.5 / 2.0 + 'px')
-          .style('top', d => d.y - self.textScale(d.count) / 2.0 + 'px')
+          .style(
+            'left',
+            d =>
+              d.x - self.areaScale(d.count) * 1.5 / 2.0 * curTransform.k + 'px'
+          )
+          .style(
+            'top',
+            d => d.y - self.textScale(d.count) / 2.0 * curTransform.k + 'px'
+          )
+          // .style('left', d => d.x + 'px')
+          // .style('top', d => d.y + 'px')
           .style('width', d => self.areaScale(d.count) * 1.5 + 'px')
         texts.exit().remove()
 
@@ -94,6 +106,39 @@ export default {
         .on('tick', tick)
 
       this.enableDragFunc()
+      this.enableZoomFunc()
+    },
+    enableZoomFunc() {
+      const self = this
+      this.zoomFunc = this.$d3
+        .zoom()
+        .scaleExtent([0.5, 10])
+        .on('zoom', function() {
+          self.g.attr('transform', self.$d3.event.transform)
+          self.div
+            .selectAll('span')
+            .data(self.repositoryList)
+            .each(function(d) {
+              const node = self.$d3.select(this)
+              const x = node.style('left')
+              const y = node.style('top')
+              node.style('transform-origin', '-' + x + ' -' + y)
+            })
+          self.div
+            .selectAll('span')
+            .data(self.repositoryList)
+            .style(
+              'transform',
+              'translate(' +
+                self.$d3.event.transform.x +
+                'px,' +
+                self.$d3.event.transform.y +
+                'px) scale(' +
+                self.$d3.event.transform.k +
+                ')'
+            )
+        })
+      this.g.call(this.zoomFunc)
     },
     enableDragFunc() {
       return this.$d3
