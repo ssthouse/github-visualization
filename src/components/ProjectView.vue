@@ -1,5 +1,9 @@
 <template>
   <div>
+    <ul>
+      <li>Zoom by mouse wheel</li>
+      <li>Circle can be draged</li>
+    </ul>
     <div id="projectViewContainer">
       <svg id="projectViewSvg"></svg>
       <div id="projectViewDiv"></div>
@@ -225,6 +229,13 @@ export default {
       color: white;
       pointer-events: none;
     }
+  }
+}
+
+ul {
+  width: 300px;
+  li {
+    font-size: 20px;
   }
 }
 </style>
