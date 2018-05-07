@@ -50,6 +50,7 @@ export default {
 <style>
 #drawerMenu {
   background-color: #eeeeee;
+  display: none;
 }
 
 #app {

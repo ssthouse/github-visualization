@@ -1,7 +1,7 @@
 const UserInfo = {
   state: {
     username: 'ssthouse',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/10973821?v=4',
+    avatarUrl: 'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
     follwerList: [],
     followingList: [],
     repositoryBeanList: []
