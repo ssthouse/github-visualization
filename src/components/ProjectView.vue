@@ -18,6 +18,7 @@ export default {
       textScale: null,
       simulation: null,
       zoomFunc: null,
+      updateTextLocation: null,
       div: null
     }
   },
@@ -55,7 +56,7 @@ export default {
       const self = this
       const tick = function() {
         const curTransform = self.$d3.zoomTransform(self.div)
-        console.log('tick!!!')
+        self.updateTextLocation()
         const texts = self.div.selectAll('span').data(self.repositoryList)
         texts
           .enter()
@@ -72,8 +73,6 @@ export default {
             'top',
             d => d.y - self.textScale(d.count) / 2.0 * curTransform.k + 'px'
           )
-          // .style('left', d => d.x + 'px')
-          // .style('top', d => d.y + 'px')
           .style('width', d => self.areaScale(d.count) * 1.5 + 'px')
         texts.exit().remove()
 
@@ -114,6 +113,7 @@ export default {
         .zoom()
         .scaleExtent([0.5, 10])
         .on('zoom', function() {
+          console.log('zoom')
           self.g.attr('transform', self.$d3.event.transform)
           self.div
             .selectAll('span')
@@ -141,6 +141,18 @@ export default {
       this.g.call(this.zoomFunc)
     },
     enableDragFunc() {
+      const self = this
+      this.updateTextLocation = function() {
+        self.div
+          .selectAll('span')
+          .data(self.repositoryList)
+          .each(function(d) {
+            const node = self.$d3.select(this)
+            const x = node.style('left')
+            const y = node.style('top')
+            node.style('transform-origin', '-' + x + ' -' + y)
+          })
+      }
       return this.$d3
         .drag()
         .on('start', d => {
@@ -151,6 +163,7 @@ export default {
         .on('drag', d => {
           d.fx = this.$d3.event.x
           d.fy = this.$d3.event.y
+          self.updateTextLocation()
         })
         .on('end', d => {
           if (!this.$d3.event.active) this.simulation.alphaTarget(0)
