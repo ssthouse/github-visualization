@@ -1,15 +1,15 @@
 import AV from 'leancloud-storage'
-// import env from '@/components/util/env'
+import env from '@/components/util/env'
 
 // Bean
 const UserRecord = AV.Object.extend('UserRecord')
 
 class UserRecorder {
   addRecord(githubUsername) {
-    // if (env.isDevMode()) {
-    //   console.log('emit user record in dev mode')
-    //   return
-    // }
+    if (env.isDevMode()) {
+      console.log('emit user record in dev mode')
+      return
+    }
     const userRecord = new UserRecord()
     userRecord
       .save({
