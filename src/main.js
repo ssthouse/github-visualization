@@ -17,6 +17,7 @@ Vue.config.productionTip = false
 Vue.prototype.$axios = HTTP
 Vue.prototype.$d3 = d3
 Vue.prototype.$leancloud = leancloud
+leancloud.init()
 
 /* eslint-disable no-new */
 new Vue({

@@ -45,7 +45,6 @@ export default {
     }
   },
   created() {
-    console.log(process.env)
     env.setEnv(process.env)
   }
 }

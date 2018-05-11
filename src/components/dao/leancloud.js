@@ -12,4 +12,5 @@ class Leancloud {
     })
   }
 }
-export default new Leancloud()
+const leancloud = new Leancloud()
+export default leancloud
