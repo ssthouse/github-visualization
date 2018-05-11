@@ -8,7 +8,6 @@
       </v-flex>
       <v-flex xs4>
         <v-btn @click="showProjects">show projects</v-btn>
-        <v-btn @click="sendMail">Send mail</v-btn>
       </v-flex>
     </v-layout>
     <v-avatar
@@ -26,7 +25,7 @@
 <script>
 import ProjectPlot from './ProjectView'
 import ProjectDao from './dao/projectDao'
-import EmailSender from './util/emailSender'
+import userRecorder from './dao/userRecorder'
 
 export default {
   name: 'Main',
@@ -35,7 +34,7 @@ export default {
     return {
       projectDao: new ProjectDao(),
       username: '',
-      emailSender: new EmailSender()
+      userRecorder
     }
   },
   computed: {
@@ -47,9 +46,7 @@ export default {
     showProjects() {
       this.$store.commit('updateUsername', this.username)
       this.projectDao.getAllProjects()
-    },
-    sendMail(){
-      this.emailSender.sendEmail('ssthouse@163.com', 'test subject', 'test body')
+      this.userRecorder.addRecord(this.username)
     }
   }
 }

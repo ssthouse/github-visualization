@@ -43,6 +43,9 @@ export default {
     switchComponent(newRouter) {
       this.$router.push(newRouter)
     }
+  },
+  created() {
+    this.$leancloud.init()
   }
 }
 </script>
