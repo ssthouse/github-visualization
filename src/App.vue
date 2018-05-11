@@ -23,7 +23,7 @@
       <v-container fluid>
         <router-view></router-view>
       </v-container>
-     </v-content>
+    </v-content>
     <v-footer app></v-footer>
   </div>
 </template>

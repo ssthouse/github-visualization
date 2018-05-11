@@ -2,19 +2,13 @@
   <div>
     <v-layout row wrap>
       <v-flex xs8>
-        <v-text-field label="github usename"
-          v-model="username"
-          class="input-group--focused"></v-text-field>
+        <v-text-field label="github usename" v-model="username" class="input-group--focused"></v-text-field>
       </v-flex>
       <v-flex xs4>
         <v-btn @click="showProjects">show projects</v-btn>
       </v-flex>
     </v-layout>
-    <v-avatar
-      :tile="false"
-      size="120px"
-      class="grey lighten-4"
-    >
+    <v-avatar :tile="false" size="120px" class="grey lighten-4">
       <img :src="avatarUrl" alt="avatar">
     </v-avatar>
 
