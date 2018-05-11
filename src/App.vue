@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import env from '@/components/util/env'
+
 export default {
   name: 'App',
   data() {
@@ -44,8 +46,8 @@ export default {
       this.$router.push(newRouter)
     }
   },
-  created() {
-    this.$leancloud.init()
+  mounted() {
+    env.setEnv(process.env)
   }
 }
 </script>

@@ -26,6 +26,7 @@
 import ProjectPlot from './ProjectView'
 import ProjectDao from './dao/projectDao'
 import userRecorder from './dao/userRecorder'
+import env from '@/components/util/env'
 
 export default {
   name: 'Main',
@@ -48,6 +49,10 @@ export default {
       this.projectDao.getAllProjects()
       this.userRecorder.addRecord(this.username)
     }
+  },
+  created() {
+    console.log(process.env)
+    env.setEnv(process.env)
   }
 }
 </script>
