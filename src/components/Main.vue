@@ -12,19 +12,19 @@
       <img :src="avatarUrl" alt="avatar">
     </v-avatar>
 
-    <project-plot></project-plot>
+    <project-view></project-view>
   </div>
 </template>
 
 <script>
-import ProjectPlot from './ProjectView'
+import ProjectView from './ProjectView'
 import ProjectDao from './dao/projectDao'
 import userRecorder from './dao/userRecorder'
 import env from '@/components/util/env'
 
 export default {
   name: 'Main',
-  components: { 'project-plot': ProjectPlot },
+  components: { 'project-view': ProjectView },
   data() {
     return {
       projectDao: new ProjectDao(),

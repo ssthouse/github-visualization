@@ -20,6 +20,7 @@ export default {
       height: 700,
       areaScale: null,
       textScale: null,
+      alphaScale: null,
       simulation: null,
       zoomFunc: null,
       updateTextLocation: null,
@@ -43,19 +44,18 @@ export default {
     startDisplay() {
       this.areaScale = this.$d3
         .scaleSqrt()
-        .domain([
-          this.$d3.min(this.repositoryList, d => d.count),
-          this.$d3.max(this.repositoryList, d => d.count)
-        ])
+        .domain(this.$d3.extent(this.repositoryList, d => d.count))
         .range([20, 80])
 
       this.textScale = this.$d3
         .scaleSqrt()
-        .domain([
-          this.$d3.min(this.repositoryList, d => d.count),
-          this.$d3.max(this.repositoryList, d => d.count)
-        ])
+        .domain(this.$d3.extent(this.repositoryList, d => d.count))
         .range([6, 24])
+
+      this.alphaScale = this.$d3
+        .scaleLinear()
+        .domain(this.$d3.extent(this.repositoryList, d => d.count))
+        .range([0.8, 1.0])
 
       const self = this
       const tick = function() {
@@ -90,6 +90,7 @@ export default {
           .attr('cx', d => d.x)
           .attr('cy', d => d.y)
           .attr('r', d => self.areaScale(d.count))
+          .style('opacity', d => self.alphaScale(d.count))
           .call(self.enableDragFunc())
         repositoryCircles.exit().remove()
       }
@@ -117,7 +118,6 @@ export default {
         .zoom()
         .scaleExtent([0.5, 10])
         .on('zoom', function() {
-          console.log('zoom')
           self.g.attr('transform', self.$d3.event.transform)
           self.div
             .selectAll('span')
