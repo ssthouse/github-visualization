@@ -21,7 +21,8 @@ export default class ProjectDao {
       repositoryBeanList.push(
         new RepositoryBean(
           curRepositpry.name,
-          curRepositpry.ref.target.history.totalCount
+          curRepositpry.ref.target.history.totalCount,
+          curRepositpry.isFork
         )
       )
     }
@@ -44,6 +45,7 @@ export default class ProjectDao {
             nodes{
               id
               name
+              isFork
               ref(qualifiedName: "master") {
                 target {
                   ... on Commit {

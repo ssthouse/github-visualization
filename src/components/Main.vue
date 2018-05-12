@@ -20,7 +20,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex md4 offset-md4 xs12 style="margin-top: 20px;">
+      <v-flex md4 offset-md4 xs12 style="margin-top: 20px; margin-bottom: 20px;">
         <v-avatar :tile="false" size="120px" class="grey lighten-4">
           <img :src="avatarUrl" alt="avatar">
         </v-avatar>

@@ -1,8 +1,15 @@
 <template>
-  <div>
+  <div id="projectView">
     <div id="projectViewContainer">
       <svg id="projectViewSvg"></svg>
       <div id="projectViewDiv"></div>
+    </div>
+
+    <div id="menuPanel">
+      <v-card>
+        <v-checkbox v-model="showForkedRepo" label="Show Forked Repository">
+        </v-checkbox>
+      </v-card>
     </div>
   </div>
 </template>
@@ -20,7 +27,9 @@ export default {
       simulation: null,
       zoomFunc: null,
       updateTextLocation: null,
-      div: null
+      div: null,
+      showForkedRepo: true,
+      filteredRepositoryList: []
     }
   },
   computed: {
@@ -37,7 +46,7 @@ export default {
       this.g = svg.append('g')
       this.div = this.$d3.select('#projectViewDiv')
     },
-    startDisplay() {
+    initScales() {
       this.areaScale = this.$d3
         .scaleSqrt()
         .domain(this.$d3.extent(this.repositoryList, d => d.count))
@@ -52,12 +61,27 @@ export default {
         .scaleLinear()
         .domain(this.$d3.extent(this.repositoryList, d => d.count))
         .range([0.8, 1.0])
-
+    },
+    forkFilter(data) {
+      if (this.showForkedRepo) {
+        return true
+      }
+      if (data.isFork) {
+        return false
+      } else {
+        return true
+      }
+    },
+    startDisplay() {
+      this.initScales()
+      this.filteredRepositoryList = this.repositoryList.filter(this.forkFilter)
       const self = this
       const tick = function() {
         const curTransform = self.$d3.zoomTransform(self.div)
         self.updateTextLocation()
-        const texts = self.div.selectAll('span').data(self.repositoryList)
+        const texts = self.div
+          .selectAll('span')
+          .data(self.filteredRepositoryList)
         texts
           .enter()
           .append('span')
@@ -78,7 +102,7 @@ export default {
 
         const repositoryCircles = self.g
           .selectAll('circle')
-          .data(self.repositoryList)
+          .data(self.filteredRepositoryList)
         repositoryCircles
           .enter()
           .append('circle')
@@ -95,7 +119,7 @@ export default {
       const widthStr = this.div.style('width')
       this.width = parseFloat(widthStr.substr(0, widthStr.length - 2))
       this.simulation = this.$d3
-        .forceSimulation(this.repositoryList)
+        .forceSimulation(this.filteredRepositoryList)
         .force('charge', this.$d3.forceManyBody())
         .force(
           'collide',
@@ -182,6 +206,9 @@ export default {
         this.update()
       },
       deep: true // 开启深度监听
+    },
+    showForkedRepo(oldVal, newVal) {
+      this.update()
     }
   },
   mounted() {
@@ -227,11 +254,17 @@ export default {
     }
   }
 }
+#projectView {
+  position: relative;
+  color: black;
 
-ul {
-  width: 300px;
-  li {
-    font-size: 20px;
+  #menuPanel {
+    margin: 20px;
+    width: 260px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
   }
 }
 </style>
