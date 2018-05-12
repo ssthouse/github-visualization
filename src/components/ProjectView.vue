@@ -1,9 +1,5 @@
 <template>
   <div>
-    <ul>
-      <li>Zoom by mouse wheel</li>
-      <li>Circle can be draged</li>
-    </ul>
     <div id="projectViewContainer">
       <svg id="projectViewSvg"></svg>
       <div id="projectViewDiv"></div>
@@ -13,7 +9,7 @@
 
 <script>
 export default {
-  name: 'ProjectPlot',
+  name: 'ProjectView',
   data() {
     return {
       g: null,
