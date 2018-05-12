@@ -27,7 +27,7 @@
       </v-flex>
     </v-layout>
 
-    <users-card :user-list="followingUserList"></users-card>
+    <users-card :userList="followingUserList"></users-card>
 
     <!-- user's project view -->
     <project-view></project-view>

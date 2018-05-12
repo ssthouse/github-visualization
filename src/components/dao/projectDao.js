@@ -39,7 +39,7 @@ export default class ProjectDao {
     for (let i = 0; i < nodes.length; i++) {
       const curUser = nodes[i]
       followingUserList.push(
-        new UserBean(curUser.id, curUser.name, curUser.avatarUrl)
+        new UserBean(curUser.id, curUser.login, curUser.name, curUser.avatarUrl)
       )
     }
     return followingUserList
@@ -54,7 +54,7 @@ export default class ProjectDao {
     for (let i = 0; i < nodes.length; i++) {
       const curUser = nodes[i]
       followerUserList.push(
-        new UserBean(curUser.id, curUser.name, curUser.avatarUrl)
+        new UserBean(curUser.id, curUser.login, curUser.name, curUser.avatarUrl)
       )
     }
     return followerUserList
@@ -72,6 +72,7 @@ export default class ProjectDao {
               avatarUrl
               name
               id
+              login
             }
           }
           following(first: 100) {
@@ -79,6 +80,7 @@ export default class ProjectDao {
               avatarUrl
               name
               id
+              login
             }
           }
           repositories(first: 100){
