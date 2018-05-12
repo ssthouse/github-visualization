@@ -1,6 +1,7 @@
 import store from '@/store/index'
 import http from '@/plugin/axios'
 import RepositoryBean from '@/store/userinfo/bean/repositoryBean'
+import UserBean from '@/store/userinfo/bean/userBean'
 
 export default class ProjectDao {
   constructor() {
@@ -29,6 +30,36 @@ export default class ProjectDao {
     return repositoryBeanList
   }
 
+  getFollowingUserList(data) {
+    if (!data) {
+      return
+    }
+    const followingUserList = []
+    const nodes = data.user.following.nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const curUser = nodes[i]
+      followingUserList.push(
+        new UserBean(curUser.id, curUser.name, curUser.avatarUrl)
+      )
+    }
+    return followingUserList
+  }
+
+  getFollowerUserList(data) {
+    if (!data) {
+      return
+    }
+    const followerUserList = []
+    const nodes = data.user.followers.nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const curUser = nodes[i]
+      followerUserList.push(
+        new UserBean(curUser.id, curUser.name, curUser.avatarUrl)
+      )
+    }
+    return followerUserList
+  }
+
   getAllProjects() {
     const username = this.store.state.userinfo.username
     const queryJson = {
@@ -36,6 +67,20 @@ export default class ProjectDao {
         user(login: "${username}") {
           avatarUrl
           name
+          followers(first: 100) {
+            nodes {
+              avatarUrl
+              name
+              id
+            }
+          }
+          following(first: 100) {
+            nodes {
+              avatarUrl
+              name
+              id
+            }
+          }
           repositories(first: 100){
             totalCount
             pageInfo{
@@ -64,13 +109,20 @@ export default class ProjectDao {
       .post('', JSON.stringify(queryJson))
       .then(response => {
         const user = response.data.data.user
-        // update data in vuex
         this.store.commit('updateUserInfo', {
           avatarUrl: user.avatarUrl
         })
         this.store.commit(
           'updateRepositoryBeanList',
           this.getRepositoryBeanListFromQuery(response.data.data)
+        )
+        this.store.commit(
+          'updateFollowerUserList',
+          this.getFollowerUserList(response.data.data)
+        )
+        this.store.commit(
+          'updateFollowingUserList',
+          this.getFollowingUserList(response.data.data)
         )
       })
       .catch(response => {

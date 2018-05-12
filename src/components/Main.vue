@@ -26,19 +26,24 @@
         </v-avatar>
       </v-flex>
     </v-layout>
+
+    <users-card :user-list="followingUserList"></users-card>
+
+    <!-- user's project view -->
     <project-view></project-view>
   </div>
 </template>
 
 <script>
 import ProjectView from './ProjectView'
+import UsersCard from './UsersCard'
 import ProjectDao from './dao/projectDao'
 import userRecorder from './dao/userRecorder'
 import env from '@/components/util/env'
 
 export default {
   name: 'Main',
-  components: { 'project-view': ProjectView },
+  components: { 'project-view': ProjectView, 'users-card': UsersCard },
   data() {
     return {
       projectDao: new ProjectDao(),
@@ -49,6 +54,9 @@ export default {
   computed: {
     avatarUrl() {
       return this.$store.state.userinfo.avatarUrl
+    },
+    followingUserList() {
+      return this.$store.state.userinfo.followingUserList
     }
   },
   methods: {
