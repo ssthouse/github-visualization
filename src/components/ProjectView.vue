@@ -36,6 +36,9 @@ export default {
   methods: {
     initChartContainer() {
       if (this.g) {
+        this.div.selectAll('span').remove()
+        this.g.selectAll('circle').remove()
+        this.g.attr('transform', 'scale(1)')
         return
       }
       const svg = this.$d3.select('#projectViewSvg')
