@@ -32,11 +32,7 @@ export default {
       filteredRepositoryList: []
     }
   },
-  computed: {
-    repositoryList() {
-      return this.$store.state.userinfo.repositoryBeanList
-    }
-  },
+  props: ['repositoryList'],
   methods: {
     initChartContainer() {
       if (this.g) {
@@ -201,7 +197,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.userinfo.repositoryBeanList': {
+    repositoryList: {
       handler: function(newer, older) {
         this.update()
       },

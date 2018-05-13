@@ -27,10 +27,11 @@
       </v-flex>
     </v-layout>
 
+    <!-- follwing user list -->
     <users-card :userList="followingUserList"></users-card>
 
     <!-- user's project view -->
-    <project-view></project-view>
+    <project-view :repositoryList="repositoryList"></project-view>
   </div>
 </template>
 
@@ -48,7 +49,8 @@ export default {
     return {
       projectDao: new ProjectDao(),
       username: '',
-      userRecorder
+      userRecorder,
+      repositoryList: []
     }
   },
   computed: {
@@ -68,6 +70,14 @@ export default {
   },
   created() {
     env.setEnv(process.env)
+  },
+  watch: {
+    '$store.state.userinfo.repositoryBeanList': {
+      handler: function(newVal) {
+        this.repositoryList = newVal
+      },
+      deep: true
+    }
   }
 }
 </script>
