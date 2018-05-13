@@ -10,7 +10,7 @@ export default class ProjectDao {
 
   getRepositoryBeanListFromQuery(data) {
     if (!data) {
-      return
+      return []
     }
     const repositoryBeanList = []
     const nodes = data.user.repositories.nodes
@@ -32,7 +32,7 @@ export default class ProjectDao {
 
   getFollowingUserList(data) {
     if (!data) {
-      return
+      return []
     }
     const followingUserList = []
     const nodes = data.user.following.nodes
@@ -130,5 +130,48 @@ export default class ProjectDao {
       .catch(response => {
         console.log('~~~~~~~~~~~~~~~~error get all projects')
       })
+  }
+
+  loadUserRepositoryList(username) {
+    const queryJson = {
+      query: `query {
+        user(login: "${username}") {
+          repositories(first: 100){
+            totalCount
+            pageInfo{
+              hasNextPage
+              endCursor
+            }
+            nodes{
+              id
+              name
+              isFork
+              ref(qualifiedName: "master") {
+                target {
+                  ... on Commit {
+                    history {
+                      totalCount
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`
+    }
+    return new Promise((resolve, reject) => {
+      http
+        .post('', JSON.stringify(queryJson))
+        .then(response => {
+          const repositoryList = this.getRepositoryBeanListFromQuery(
+            response.data.data
+          )
+          resolve(repositoryList)
+        })
+        .catch(error => {
+          reject(error)
+        })
+    })
   }
 }

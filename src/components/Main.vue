@@ -28,7 +28,7 @@
     </v-layout>
 
     <!-- follwing user list -->
-    <users-card :userList="followingUserList"></users-card>
+    <users-card :userList="followingUserList" @selectUser="selectUser"></users-card>
 
     <!-- user's project view -->
     <project-view :repositoryList="repositoryList"></project-view>
@@ -66,6 +66,16 @@ export default {
       this.$store.commit('updateUsername', this.username)
       this.projectDao.getAllProjects()
       this.userRecorder.addRecord(this.username)
+    },
+    selectUser(username) {
+      this.projectDao
+        .loadUserRepositoryList(username)
+        .then(repositoryList => {
+          this.repositoryList = repositoryList
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   },
   created() {

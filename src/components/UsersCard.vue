@@ -1,5 +1,11 @@
 <template>
   <div>
+    <v-chip color="blue" text-color="white" class="label">
+      <v-avatar>
+        <v-icon>account_circle</v-icon>
+      </v-avatar>
+      <strong>People you follow:</strong>
+    </v-chip>
     <v-chip @click="chooseUser(user.username)" v-for="user in userList" v-bind:key="user.id" selected class="mouseHand">
       <v-avatar color="teal">
         <img :src="user.avatarUrl">
@@ -18,7 +24,7 @@ export default {
   props: ['userList'],
   methods: {
     chooseUser(username) {
-      console.log(username)
+      this.$emit('selectUser', username)
     }
   },
   computed: {},
@@ -26,7 +32,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="less">
 .mouseHand * {
   cursor: pointer;
 }
