@@ -15,8 +15,15 @@
         <v-card style="width: 100%;">
           <v-card-title primary-title class="action-title">Support actions:</v-card-title>
           <div style="display: flex; flex-direction: column">
-            <v-chip selected>Zoom by mouse wheel</v-chip>
-            <v-chip selected>Circles can be draged</v-chip>
+            <v-chip selected>
+              <strong>Zoom by mouse wheel</strong>
+            </v-chip>
+            <v-chip selected>
+              <strong>Circles can be draged</strong>
+            </v-chip>
+            <v-chip selected>
+              <strong>Click following user's avatar to see their repositories</strong>
+            </v-chip>
           </div>
         </v-card>
       </v-flex>
