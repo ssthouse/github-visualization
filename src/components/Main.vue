@@ -2,16 +2,17 @@
   <div class="main">
     <!-- usernam input form -->
     <v-layout row wrap>
-      <v-flex md4 offset-md4>
+      <v-flex md6 offset-md3>
         <div class="flex-row">
           <v-text-field label="github usename" v-model="username" class="input-group--focused"></v-text-field>
           <v-btn @click="showProjects">show</v-btn>
         </div>
       </v-flex>
     </v-layout>
-    <!-- action list -->
     <v-layout row wrap>
-      <v-flex md4 offset-md4 xs12>
+
+      <!-- action list -->
+      <v-flex md6 offset-md3 xs12>
         <v-card style="width: 100%;">
           <v-card-title primary-title class="action-title">Support actions:</v-card-title>
           <div style="display: flex; flex-direction: column">
@@ -24,9 +25,17 @@
             <v-chip selected>
               <strong>Click following user's avatar to see their repositories</strong>
             </v-chip>
+
+            <h3 style="margin-top: 20px;">
+              <strong>Hint: username is the last part of your github profile page:</strong>
+              <br/>
+              <strong>eg: https://github.com/ssthouse ==> ssthouse</strong>
+            </h3>
           </div>
         </v-card>
       </v-flex>
+
+      <!-- avatar -->
       <v-flex md4 offset-md4 xs12 style="margin-top: 20px; margin-bottom: 20px;">
         <v-avatar :tile="false" size="120px" class="grey lighten-4">
           <img :src="avatarUrl" alt="avatar">
