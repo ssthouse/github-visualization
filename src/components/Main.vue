@@ -70,6 +70,7 @@ export default {
   },
   methods: {
     showProjects() {
+      this.updateUrl(this.username)
       this.$store.commit('updateUsername', this.username)
       this.projectDao.getAllProjects()
       this.userRecorder.addRecord(this.username)
@@ -83,10 +84,20 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    updateUrl(username) {
+      this.$router.push({ name: 'main', query: { user: username } })
+    },
+    initUsernameFromUrl() {
+      if (
+        !this.$router.currentRoute.query ||
+        !this.$router.currentRoute.query.user
+      ) {
+        return
+      }
+      const userInUrl = this.$router.currentRoute.query.user
+      this.username = userInUrl
     }
-  },
-  created() {
-    env.setEnv(process.env)
   },
   watch: {
     '$store.state.userinfo.repositoryBeanList': {
@@ -95,6 +106,15 @@ export default {
       },
       deep: true
     }
+  },
+  mounted() {
+    if (this.username) {
+      this.showProjects()
+    }
+  },
+  created() {
+    env.setEnv(process.env)
+    this.initUsernameFromUrl()
   }
 }
 </script>
