@@ -5,12 +5,16 @@
       <div id="projectViewDiv"></div>
     </div>
 
-    <div id="menuPanel">
-      <v-card>
-        <v-checkbox v-model="showForkedRepo" label="Show Forked Repository">
-        </v-checkbox>
-      </v-card>
-    </div>
+    <!-- control panel -->
+    <v-expansion-panel id="controlPanel">
+      <v-expansion-panel-content>
+        <div slot="header">Control panel</div>
+        <div id="content">
+          <v-checkbox v-model="showForkedRepo" label="Show Forked Repository">
+          </v-checkbox>
+        </div>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
   </div>
 </template>
 
@@ -111,6 +115,8 @@ export default {
           .attr('r', d => self.areaScale(d.count))
           .style('opacity', d => self.alphaScale(d.count))
           .call(self.enableDragFunc())
+          .append('title')
+          .text(d => 'commit number: ' + d.count)
         repositoryCircles.exit().remove()
       }
 
@@ -257,13 +263,17 @@ export default {
   position: relative;
   color: black;
 
-  #menuPanel {
+  #controlPanel {
     margin: 20px;
     width: 260px;
     position: absolute;
     left: 0;
     top: 0;
     z-index: 1000;
+
+    #content {
+      padding: 8px;
+    }
   }
 }
 </style>
