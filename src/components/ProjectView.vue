@@ -12,6 +12,11 @@
         <div id="content">
           <v-checkbox v-model="showForkedRepo" label="Show Forked Repository">
           </v-checkbox>
+
+          <h3>{{'Use : ' + curShowProperty}}</h3>
+          <v-radio-group v-model="curShowProperty">
+            <v-radio v-for="(item, index) in propertyList" v-bind:key="index" :label="propertyLabelList[index]" :value="item"></v-radio>
+          </v-radio-group>
         </div>
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -33,7 +38,10 @@ export default {
       updateTextLocation: null,
       div: null,
       showForkedRepo: true,
-      filteredRepositoryList: []
+      filteredRepositoryList: [],
+      curShowProperty: 'commit number',
+      propertyList: ['commit number', 'fork number', 'star number'],
+      propertyLabelList: ['Commit number', 'Fork number', 'Star number']
     }
   },
   props: ['repositoryList'],
