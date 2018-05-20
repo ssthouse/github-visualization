@@ -25,6 +25,9 @@
             <v-chip selected>
               <strong>Click following user's avatar to see their repositories</strong>
             </v-chip>
+            <v-chip selected>
+              <strong>Hover on circle to see repository commit number</strong>
+            </v-chip>
 
             <h3 style="margin-top: 20px;">
               <strong>Hint: username is the last part of your github profile page:</strong>
