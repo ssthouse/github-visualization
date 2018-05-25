@@ -220,7 +220,10 @@ export default {
       },
       deep: true // 开启深度监听
     },
-    showForkedRepo(oldVal, newVal) {
+    showForkedRepo(newVal, oldVal) {
+      this.update()
+    },
+    curShowProperty(newVal) {
       this.update()
     }
   },
