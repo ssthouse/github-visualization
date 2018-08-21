@@ -117,14 +117,14 @@ export default {
         repositoryCircles
           .enter()
           .append('circle')
+          .append('title')
+          .text(d => 'commit number: ' + d.count)
           .merge(repositoryCircles)
           .attr('cx', d => d.x)
           .attr('cy', d => d.y)
           .attr('r', d => self.areaScale(d.count))
           .style('opacity', d => self.alphaScale(d.count))
           .call(self.enableDragFunc())
-          // .append('title')
-          // .text(d => 'commit number: ' + d.count)
         repositoryCircles.exit().remove()
       }
 
