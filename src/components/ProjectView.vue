@@ -123,8 +123,8 @@ export default {
           .attr('r', d => self.areaScale(d.count))
           .style('opacity', d => self.alphaScale(d.count))
           .call(self.enableDragFunc())
-          .append('title')
-          .text(d => 'commit number: ' + d.count)
+          // .append('title')
+          // .text(d => 'commit number: ' + d.count)
         repositoryCircles.exit().remove()
       }
 
