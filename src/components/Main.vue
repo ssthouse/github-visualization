@@ -49,13 +49,22 @@
     <!-- follwing user list -->
     <users-card :userList="followingUserList" @selectUser="selectUser"></users-card>
 
-    <!-- user's project view -->
-    <project-view :repositoryList="repositoryList"></project-view>
+    <v-switch label="Use 3D" v-model="use3D"></v-switch>
+
+    <div v-if="!use3D">
+      <!-- user's project view -->
+      <project-view :repositoryList="repositoryList"></project-view>
+    </div>
+    <div v-else>
+      <!-- github view in 3d -->
+      <github-view-3d></github-view-3d>
+    </div>
   </div>
 </template>
 
 <script>
 import ProjectView from './ProjectView'
+import githubView3D from './3dGithubView'
 import UsersCard from './UsersCard'
 import ProjectDao from './dao/projectDao'
 import userRecorder from './dao/userRecorder'
@@ -63,13 +72,18 @@ import env from '@/components/util/env'
 
 export default {
   name: 'Main',
-  components: { 'project-view': ProjectView, 'users-card': UsersCard },
+  components: {
+    'project-view': ProjectView,
+    'github-view-3d': githubView3D,
+    'users-card': UsersCard
+  },
   data() {
     return {
       projectDao: new ProjectDao(),
       username: '',
       userRecorder,
-      repositoryList: []
+      repositoryList: [],
+      use3D: false
     }
   },
   computed: {
