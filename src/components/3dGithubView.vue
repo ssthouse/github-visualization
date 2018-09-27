@@ -1,5 +1,8 @@
 <template>
-  <div id="view-container">
+  <div class='container'>
+    <div id="view-container">
+    </div>
+    <v-btn @click='logTest'>show projects</v-btn>
   </div>
 </template>
 
@@ -12,18 +15,27 @@ export default {
       githubView: new GithubViewThree('view-container')
     }
   },
-  methods: {},
-  mounted() {
-    this.githubView.start()
-  }
+  props: ['repositoryList'],
+  methods: {
+    logTest() {
+      // console.log(this.repositoryList)
+      this.githubView.drawProjects(this.repositoryList)
+    }
+  },
+  mounted() {}
 }
 </script>
 
-<style scoped>
-#view-container {
+<style scoped lang="less">
+.container {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 500px;
+  flex-direction: column;
+
+  #view-container {
+    height: 500px;
+    width: 500px;
+  }
 }
 </style>
