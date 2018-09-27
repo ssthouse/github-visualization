@@ -27,4 +27,8 @@ npm run build
 
 ##  TODO
 
+- 3D version
+  - [ ] Display same effect like 2D version
+  - [ ] Add interaction to the 3D view
 - Fix issues
+- Add some loading UI after user click **show**  button
