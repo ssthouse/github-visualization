@@ -15,7 +15,7 @@ class GithubViewThree {
       0.1,
       1000
     )
-    this.camera.position.z = 5
+    this.camera.position.z = 200
 
     this.renderer = new THREE.WebGLRenderer({ alpha: true })
     this.renderer.setClearColor(0xeeeeee, 0.3)
@@ -23,6 +23,11 @@ class GithubViewThree {
     this.renderer.setSize(this.containerSize, this.containerSize)
     contaienrElement.appendChild(this.renderer.domElement)
     // this.testAddCube()
+
+    // add light
+    var spotLight = new THREE.SpotLight(0xffffff)
+    spotLight.position.set(-40, 60, 100)
+    this.scene.add(spotLight)
 
     this.animate()
   }
@@ -35,11 +40,11 @@ class GithubViewThree {
   }
 
   addBall(xIndex, yIndex) {
-    var geometry = new THREE.SphereGeometry(0.08, 32, 32)
-    var material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    var geometry = new THREE.SphereGeometry(5, 32, 32)
+    var material = new THREE.MeshLambertMaterial({ color: 0xff0000 })
     var sphere = new THREE.Mesh(geometry, material)
     this.scene.add(sphere)
-    sphere.position.set(xIndex / 200, yIndex / 200, 0)
+    sphere.position.set(xIndex, yIndex, 0)
   }
 
   animate() {
@@ -56,7 +61,7 @@ class GithubViewThree {
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
       .force('charge', D3.forceManyBody())
-      .force('collide', D3.forceCollide().radius(10))
+      .force('collide', D3.forceCollide().radius(40))
       .force('forceX', D3.forceX(this.containerSize / 2).strength(0.05))
       .force('forceY', D3.forceY(this.containerSize / 2).strength(0.05))
 
