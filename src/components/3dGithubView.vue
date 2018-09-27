@@ -1,17 +1,41 @@
 <template>
-  <div id="view-container">
+  <div class='container'>
+    <div id="view-container">
+    </div>
+    <v-btn @click='logTest'>show projects</v-btn>
   </div>
 </template>
 
 <script>
+import GithubViewThree from './GithubViewThree'
+
 export default {
   data() {
-    return {}
+    return {
+      githubView: new GithubViewThree('view-container')
+    }
   },
-  methods: {},
-  created() {}
+  props: ['repositoryList'],
+  methods: {
+    logTest() {
+      // console.log(this.repositoryList)
+      this.githubView.drawProjects(this.repositoryList)
+    }
+  },
+  mounted() {}
 }
 </script>
 
-<style>
+<style scoped lang="less">
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  #view-container {
+    height: 500px;
+    width: 500px;
+  }
+}
 </style>

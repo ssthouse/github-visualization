@@ -57,7 +57,7 @@
     </div>
     <div v-else>
       <!-- github view in 3d -->
-      <github-view-3d></github-view-3d>
+      <github-view-3d :repositoryList="repositoryList"></github-view-3d>
     </div>
   </div>
 </template>
@@ -83,7 +83,7 @@ export default {
       username: '',
       userRecorder,
       repositoryList: [],
-      use3D: false
+      use3D: true
     }
   },
   computed: {
