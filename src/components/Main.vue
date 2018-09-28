@@ -68,7 +68,8 @@ import githubView3D from './3dGithubView'
 import UsersCard from './UsersCard'
 import ProjectDao from './dao/projectDao'
 import userRecorder from './dao/userRecorder'
-import env from '@/components/util/env'
+import env from './util/env'
+import MockData from './util/mockData'
 
 export default {
   name: 'Main',
@@ -136,6 +137,10 @@ export default {
   mounted() {
     if (this.username) {
       this.showProjects()
+    }
+    // is dev mode ? set mock data
+    if (env.isDevMode()) {
+      this.repositoryList = MockData.getRepositoryList()
     }
   },
   created() {
