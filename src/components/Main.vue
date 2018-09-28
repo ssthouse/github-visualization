@@ -82,7 +82,7 @@ export default {
       username: '',
       userRecorder,
       repositoryList: [],
-      use3D: true
+      use3D: false
     }
   },
   computed: {
