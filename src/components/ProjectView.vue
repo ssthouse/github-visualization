@@ -30,6 +30,7 @@ export default {
     return {
       g: null,
       height: 700,
+      width: 0,
       areaScale: null,
       textScale: null,
       alphaScale: null,
@@ -102,7 +103,10 @@ export default {
           .style(
             'left',
             d =>
-              d.x - self.areaScale(d.count) * 1.5 / 2.0 * curTransform.k + 'px'
+              d.x +
+              self.width / 2 -
+              self.areaScale(d.count) * 1.5 / 2.0 * curTransform.k +
+              'px'
           )
           .style(
             'top',
@@ -120,7 +124,7 @@ export default {
           .append('title')
           .text(d => 'commit number: ' + d.count)
           .merge(repositoryCircles)
-          .attr('cx', d => d.x)
+          .attr('cx', d => d.x + self.width / 2)
           .attr('cy', d => d.y)
           .attr('r', d => self.areaScale(d.count))
           .style('opacity', d => self.alphaScale(d.count))
@@ -129,8 +133,8 @@ export default {
       }
 
       // start simulation
-      const widthStr = this.div.style('width')
-      this.width = parseFloat(widthStr.substr(0, widthStr.length - 2))
+      // const widthStr = this.div.style('width')
+      // this.width = parseFloat(widthStr.substr(0, widthStr.length - 2))
       this.simulation = this.$d3
         .forceSimulation(this.filteredRepositoryList)
         .force('charge', this.$d3.forceManyBody())
@@ -229,6 +233,7 @@ export default {
   },
   mounted() {
     this.update()
+    this.width = window.innerWidth / 2
   }
 }
 </script>
@@ -258,6 +263,10 @@ export default {
   }
 
   #projectViewDiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
     width: 100%;
     height: @svg-height;
 
@@ -273,6 +282,7 @@ export default {
 #projectView {
   position: relative;
   color: black;
+  overflow: hidden;
 
   #controlPanel {
     margin: 20px;

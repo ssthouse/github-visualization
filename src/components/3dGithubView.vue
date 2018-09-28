@@ -35,7 +35,7 @@ export default {
 
   #view-container {
     height: 500px;
-    width: 500px;
+    width: 100%;
   }
 }
 </style>
