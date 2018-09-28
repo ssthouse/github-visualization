@@ -39,8 +39,8 @@ class GithubViewThree {
     this.scene.add(cube)
   }
 
-  addBall(xIndex, yIndex) {
-    var geometry = new THREE.SphereGeometry(5, 32, 32)
+  addBall(xIndex, yIndex, radius) {
+    var geometry = new THREE.SphereGeometry(radius, 32, 32)
     var material = new THREE.MeshLambertMaterial({ color: 0xff0000 })
     var sphere = new THREE.Mesh(geometry, material)
     this.scene.add(sphere)
@@ -56,7 +56,12 @@ class GithubViewThree {
     const self = this
     this.initScene()
     this.reporitoryList = reporitoryList
-    // console.log(this.reporitoryList)
+
+    // initial scale
+    this.volumeScale = D3.scalePow()
+      .exponent(1 / 3)
+      .domain(D3.extent(this.reporitoryList, d => d.count))
+      .range([2, 20])
 
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
@@ -71,7 +76,7 @@ class GithubViewThree {
       .data(this.reporitoryList)
     circles.enter().each(function() {
       const datum = D3.select(this).datum()
-      self.addBall(datum.x, datum.y)
+      self.addBall(datum.x, datum.y, self.volumeScale(datum.count))
     })
   }
 }
