@@ -58,7 +58,7 @@ class GithubViewThree {
 
   addBall(xIndex, yIndex, radius, name) {
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
-    var material = new THREE.MeshLambertMaterial({ color: 0x554DB6AC })
+    var material = new THREE.MeshNormalMaterial({ color: 0x554DB6AC })
     var sphere = new THREE.Mesh(geometry, material)
     sphere.name = name
     this.scene.add(sphere)
