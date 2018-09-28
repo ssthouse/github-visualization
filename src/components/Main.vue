@@ -51,13 +51,11 @@
 
     <v-switch label="Use 3D" v-model="use3D"></v-switch>
 
-    <div v-if="!use3D">
+    <div>
       <!-- user's project view -->
-      <project-view :repositoryList="repositoryList"></project-view>
-    </div>
-    <div v-else>
+      <project-view v-show="!use3D" :repositoryList="repositoryList"></project-view>
       <!-- github view in 3d -->
-      <github-view-3d :repositoryList="repositoryList"></github-view-3d>
+      <github-view-3d v-show="use3D" :repositoryList="repositoryList"></github-view-3d>
     </div>
   </div>
 </template>
