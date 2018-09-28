@@ -1,5 +1,6 @@
 import * as THREE from 'three.js'
 import * as D3 from 'd3'
+const OrbitControls = require('three-orbit-controls')(THREE)
 
 class GithubViewThree {
   constructor(containerId) {
@@ -19,15 +20,33 @@ class GithubViewThree {
     this.renderer.setSize(width, height)
     contaienrElement.appendChild(this.renderer.domElement)
 
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
     this.camera.position.z = 200
+    this.camera.position.y = 50
+    this.camera.position.x = 50
+    this.camera.lookAt(0, 0, 0)
+    this.controls = new OrbitControls(this.camera)
 
     // add light
-    var spotLight = new THREE.SpotLight(0xffffff)
-    spotLight.position.set(-40, 60, 100)
+    var light = new THREE.AmbientLight(0x404040, 1) // soft white light
+    this.scene.add(light)
+    var spotLight = new THREE.DirectionalLight(0xffffff, 0.7)
+    spotLight.position.set(0, 0, 200)
+    spotLight.lookAt(0, 0, 0)
     this.scene.add(spotLight)
-
+    this.addGround()
     this.animate()
+  }
+
+  addGround() {
+    var geometry = new THREE.PlaneGeometry(400, 400, 32)
+    var material = new THREE.MeshLambertMaterial({
+      color: 0xeeeeee,
+      side: THREE.DoubleSide
+    })
+    var plane = new THREE.Mesh(geometry, material)
+    plane.position.z = -100
+    this.scene.add(plane)
   }
 
   testAddCube() {
@@ -39,7 +58,7 @@ class GithubViewThree {
 
   addBall(xIndex, yIndex, radius, name) {
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
-    var material = new THREE.MeshLambertMaterial({ color: 0x008080 })
+    var material = new THREE.MeshLambertMaterial({ color: 0x554DB6AC })
     var sphere = new THREE.Mesh(geometry, material)
     sphere.name = name
     this.scene.add(sphere)
@@ -48,6 +67,7 @@ class GithubViewThree {
 
   animate() {
     requestAnimationFrame(() => this.animate())
+    this.controls.update()
     this.renderer.render(this.scene, this.camera)
   }
 
