@@ -234,7 +234,6 @@ export default {
   mounted() {
     this.update()
     this.width = window.innerWidth / 2
-    console.log(this.width)
   }
 }
 </script>

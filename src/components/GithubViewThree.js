@@ -37,10 +37,11 @@ class GithubViewThree {
     this.scene.add(cube)
   }
 
-  addBall(xIndex, yIndex, radius) {
+  addBall(xIndex, yIndex, radius, name) {
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
     var material = new THREE.MeshLambertMaterial({ color: 0x008080 })
     var sphere = new THREE.Mesh(geometry, material)
+    sphere.name = name
     this.scene.add(sphere)
     sphere.position.set(xIndex, yIndex, 0)
   }
@@ -64,6 +65,7 @@ class GithubViewThree {
       .domain(D3.extent([0, 500]))
       .range([0, 100])
 
+    this.addBallsToScene()
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
       .force('charge', D3.forceManyBody())
@@ -73,27 +75,45 @@ class GithubViewThree {
       )
       .force('forceX', D3.forceX(0).strength(0.05))
       .force('forceY', D3.forceY(0).strength(0.05))
-      .on('end', function() {
-        self.updateIndex()
+      .on('tick', function() {
+        self.updateBallIndex()
       })
   }
 
-  updateIndex() {
+  addBallsToScene() {
     const self = this
-    let virtualElement = document.createElement('svg')
-    const circles = D3.select(virtualElement)
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    const circles = D3.select(this.virtualElement)
       .selectAll('circle')
       .data(this.reporitoryList)
     circles
       .enter()
-      .merge(circles)
-      .each(function() {
+      .each(function(d, i) {
         const datum = D3.select(this).datum()
         self.addBall(
           self.indexScale(datum.x),
           self.indexScale(datum.y),
-          self.volumeScale(datum.count)
+          self.volumeScale(datum.count),
+          i
         )
+      })
+      .append('circle')
+  }
+
+  updateBallIndex() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    D3.select(this.virtualElement)
+      .selectAll('circle')
+      .data(this.reporitoryList)
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.scene.getObjectByName(i).position.x = self.indexScale(datum.x)
+        self.scene.getObjectByName(i).position.y = self.indexScale(datum.y)
       })
   }
 }
