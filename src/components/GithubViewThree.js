@@ -1,10 +1,15 @@
 import * as THREE from 'three.js'
 import * as D3 from 'd3'
+
+import fontPath from '../assets/fonts/gentilis_regular.typeface.json'
+console.log(fontPath)
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 class GithubViewThree {
   constructor(containerId) {
     this.containerId = containerId
+    // this method need network
+    this.loadFont()
   }
 
   initScene() {
@@ -35,6 +40,8 @@ class GithubViewThree {
     spotLight.lookAt(0, 0, 0)
     this.scene.add(spotLight)
     this.addGround()
+    // load text related resource
+    this.loadText()
     this.animate()
   }
 
@@ -58,11 +65,105 @@ class GithubViewThree {
 
   addBall(xIndex, yIndex, radius, name) {
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
-    var material = new THREE.MeshNormalMaterial({ color: 0x554DB6AC })
+    var material = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
     var sphere = new THREE.Mesh(geometry, material)
     sphere.name = name
     this.scene.add(sphere)
     sphere.position.set(xIndex, yIndex, 0)
+  }
+
+  addTextsToScene() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    const texts = D3.select(this.virtualElement)
+      .selectAll('text')
+      .data(this.reporitoryList)
+    texts
+      .enter()
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.addText(
+          datum.name,
+          self.indexScale(datum.x),
+          self.indexScale(datum.y),
+          self.volumeScale(datum.count),
+          'text' + i
+        )
+      })
+      .append('text')
+  }
+
+  updateTextsIndex() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    D3.select(this.virtualElement)
+      .selectAll('text')
+      .data(this.reporitoryList)
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.scene.getObjectByName('text' + i).position.x = self.indexScale(
+          datum.x
+        )
+        self.scene.getObjectByName('text' + i).position.y = self.indexScale(
+          datum.y
+        )
+      })
+  }
+
+  /**
+   *
+   * @param {number} xIndex
+   * @param {number} yIndex
+   * @param {number} size
+   * @param {String} name name should be 'text' + index
+   */
+  addText(text, xIndex, yIndex, radius, name) {
+    console.log('add text to scene')
+    // some default setting:
+    // let curveSegments = 4
+    // let bevelThickness = 2
+    // let bevelSize = 1.5
+    // let bevelEnabled = true
+    let textGeo = new THREE.TextGeometry(text, {
+      font: this.font,
+      size: 1,
+      height: 0.01
+      // curveSegments: curveSegments,
+      // bevelThickness: bevelThickness,
+      // bevelSize: bevelSize,
+      // bevelEnabled: bevelEnabled
+    })
+    // textGeo.computeBoundingBox()
+    // textGeo.computeVertexNormals()
+    // textGeo = new THREE.BufferGeometry().fromGeometry(textGeo)
+    let textMesh = new THREE.Mesh(textGeo, this.textMaterial)
+    // textMesh.position.x = xIndex
+    // textMesh.position.y = yIndex
+    textMesh.position.z = radius + 1
+    textMesh.name = name
+    this.textGroup.add(textMesh)
+  }
+
+  loadText() {
+    // this.textMaterials = [
+    //   new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // for text
+    //   new THREE.MeshPhongMaterial({ color: 0xffffff }) // for side
+    // ]
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    this.textGroup = new THREE.Group()
+    this.textGroup.position.z = 0
+    this.scene.add(this.textGroup)
+  }
+
+  loadFont() {
+    const loader = new THREE.FontLoader()
+    loader.load(fontPath, response => {
+      this.font = response
+    })
   }
 
   animate() {
@@ -86,6 +187,7 @@ class GithubViewThree {
       .range([0, 100])
 
     this.addBallsToScene()
+    this.addTextsToScene()
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
       .force('charge', D3.forceManyBody())
@@ -97,6 +199,7 @@ class GithubViewThree {
       .force('forceY', D3.forceY(0).strength(0.05))
       .on('tick', function() {
         self.updateBallIndex()
+        self.updateTextsIndex()
       })
   }
 
