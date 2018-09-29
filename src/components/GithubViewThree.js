@@ -1,5 +1,6 @@
 import * as THREE from 'three.js'
 import * as D3 from 'd3'
+import env from './util/env'
 
 import fontPath from '../assets/fonts/gentilis_regular.typeface.json'
 console.log(fontPath)
@@ -42,7 +43,15 @@ class GithubViewThree {
     this.addGround()
     // load text related resource
     this.loadText()
+    this.addAxisForDev()
     this.animate()
+  }
+
+  addAxisForDev() {
+    if (env.isDevMode()) {
+      let axes = new THREE.AxisHelper(100)
+      this.scene.add(axes)
+    }
   }
 
   addGround() {
