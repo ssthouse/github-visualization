@@ -105,12 +105,16 @@ class GithubViewThree {
       .data(this.reporitoryList)
       .each(function(d, i) {
         const datum = D3.select(this).datum()
-        self.scene.getObjectByName('text' + i).position.x = self.indexScale(
-          datum.x
-        )
-        self.scene.getObjectByName('text' + i).position.y = self.indexScale(
-          datum.y
-        )
+        const textMesh = self.scene.getObjectByName('text' + i)
+        if (!textMesh.geometry.boundingBox) {
+          textMesh.geometry.computeBoundingBox()
+        }
+        textMesh.position.x =
+          self.indexScale(datum.x) -
+          (textMesh.geometry.boundingBox.max.x -
+            textMesh.geometry.boundingBox.min.x) /
+            2
+        textMesh.position.y = self.indexScale(datum.y)
       })
   }
 
@@ -131,7 +135,7 @@ class GithubViewThree {
     let textGeo = new THREE.TextGeometry(text, {
       font: this.font,
       size: 1,
-      height: 0.01
+      height: 0.04
       // curveSegments: curveSegments,
       // bevelThickness: bevelThickness,
       // bevelSize: bevelSize,
