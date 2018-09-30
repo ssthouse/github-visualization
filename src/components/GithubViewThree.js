@@ -79,7 +79,7 @@ class GithubViewThree {
     }
     const texts = D3.select(this.virtualElement)
       .selectAll('text')
-      .data(this.reporitoryList)
+      .data(this.data)
     texts
       .enter()
       .each(function(d, i) {
@@ -184,33 +184,35 @@ class GithubViewThree {
     this.initScene()
     this.reporitoryList = reporitoryList
 
+    // use d3 to calculate the position of each circle
+    this.calcluate3DLayout()
+
     // initial scale
     this.volumeScale = D3.scalePow()
       .exponent(1 / 3)
       .domain(D3.extent(this.reporitoryList, d => d.count))
-      .range([2, 16])
+      .range([1, 8])
     this.indexScale = D3.scaleLinear()
-      .domain(D3.extent([0, 500]))
-      .range([0, 100])
+      .domain([0, 500])
+      .range([0, 50])
 
-    // this.addBallsToScene()
-    // this.addTextsToScene()
-    // use d3 to calculate the position of each circle
-    this.simulation = D3.forceSimulation(this.reporitoryList)
-      .force('charge', D3.forceManyBody())
-      .force(
-        'collide',
-        D3.forceCollide().radius(d => this.volumeScale(d.count) + 12)
-      )
-      .force('forceX', D3.forceX(0).strength(0.05))
-      .force('forceY', D3.forceY(0).strength(0.05))
-      .on('tick', () => console.log('tick'))
-      .on('end', () => {
-        this.addBallsToScene()
-      })
+    this.addBallsToScene()
+  }
+
+  calcluate3DLayout() {
+    this.packSize = 500
+    const pack = D3.pack()
+      .size([this.packSize, this.packSize])
+      .padding(5)
+    const rootData = D3.hierarchy({
+      children: this.reporitoryList
+    }).sum(d => Math.sqrt(d.count))
+    this.data = pack(rootData).leaves()
+    console.log(this.data)
   }
 
   generateBallMesh(xIndex, yIndex, radius, name) {
+    // console.log(`xIndex: ${xIndex}   yIndex: ${yIndex}`)
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
     var sphere = new THREE.Mesh(geometry, this.ballMaterial)
     sphere.position.set(xIndex, yIndex, 0)
@@ -226,16 +228,17 @@ class GithubViewThree {
     this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
     const circles = D3.select(this.virtualElement)
       .selectAll('circle')
-      .data(this.reporitoryList)
+      .data(this.data)
     circles
       .enter()
       .each(function(d, i) {
         const datum = D3.select(this).datum()
+        console.log('radius: ' + self.volumeScale(datum.value))
         ballMeshList.push(
           self.generateBallMesh(
             self.indexScale(datum.x),
             self.indexScale(datum.y),
-            self.volumeScale(datum.count),
+            self.indexScale(datum.r),
             i
           )
         )
