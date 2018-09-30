@@ -83,7 +83,7 @@ export default {
       userRecorder,
       repositoryList: [],
       repositoryList3D: [],
-      use3D: true
+      use3D: env.isDevMode()
     }
   },
   computed: {
