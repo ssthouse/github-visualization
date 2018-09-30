@@ -83,7 +83,7 @@ export default {
       userRecorder,
       repositoryList: [],
       repositoryList3D: [],
-      use3D: env.isDevMode()
+      use3D: false
     }
   },
   computed: {
@@ -147,6 +147,7 @@ export default {
   },
   created() {
     env.setEnv(process.env)
+    this.use3D = env.isDevMode()
     this.initUsernameFromUrl()
   }
 }
