@@ -65,13 +65,6 @@ class GithubViewThree {
     this.scene.add(plane)
   }
 
-  testAddCube() {
-    var geometry = new THREE.BoxGeometry(1, 1, 1)
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    var cube = new THREE.Mesh(geometry, material)
-    this.scene.add(cube)
-  }
-
   addTextsToScene() {
     const self = this
     if (!this.virtualElement) {
@@ -196,6 +189,7 @@ class GithubViewThree {
       .range([-25, 25])
 
     this.addBallsToScene()
+    // this.addMergedBallsToScene()
   }
 
   calcluate3DLayout() {
@@ -222,6 +216,31 @@ class GithubViewThree {
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
     }
+    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
+    const circles = D3.select(this.virtualElement)
+      .selectAll('circle')
+      .data(this.data)
+    circles
+      .enter()
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.scene.add(
+          self.generateBallMesh(
+            self.indexScale(datum.x),
+            self.indexScale(datum.y),
+            self.volumeScale(datum.r),
+            i
+          )
+        )
+      })
+      .append('circle')
+  }
+
+  addMergedBallsToScene() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
     const ballMeshList = []
     this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
     const circles = D3.select(this.virtualElement)
@@ -231,7 +250,6 @@ class GithubViewThree {
       .enter()
       .each(function(d, i) {
         const datum = D3.select(this).datum()
-        console.log('radius: ' + self.volumeScale(datum.value))
         ballMeshList.push(
           self.generateBallMesh(
             self.indexScale(datum.x),
