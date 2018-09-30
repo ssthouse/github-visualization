@@ -177,6 +177,9 @@ class GithubViewThree {
     this.renderer.render(this.scene, this.camera)
   }
 
+  /**
+   * main function exposed
+   */
   drawProjects(reporitoryList) {
     this.initScene()
     this.reporitoryList = reporitoryList
@@ -190,7 +193,7 @@ class GithubViewThree {
       .domain(D3.extent([0, 500]))
       .range([0, 100])
 
-    this.addBallsToScene()
+    // this.addBallsToScene()
     // this.addTextsToScene()
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
@@ -201,6 +204,10 @@ class GithubViewThree {
       )
       .force('forceX', D3.forceX(0).strength(0.05))
       .force('forceY', D3.forceY(0).strength(0.05))
+      .on('tick', () => console.log('tick'))
+      .on('end', () => {
+        this.addBallsToScene()
+      })
   }
 
   generateBallMesh(xIndex, yIndex, radius, name) {

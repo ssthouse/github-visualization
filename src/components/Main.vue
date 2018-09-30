@@ -55,7 +55,7 @@
       <!-- user's project view -->
       <project-view v-show="!use3D" :repositoryList="repositoryList"></project-view>
       <!-- github view in 3d -->
-      <github-view-3d v-show="use3D" :repositoryList="repositoryList"></github-view-3d>
+      <github-view-3d v-show="use3D" :repositoryList="repositoryList3D"></github-view-3d>
     </div>
   </div>
 </template>
@@ -82,7 +82,8 @@ export default {
       username: '',
       userRecorder,
       repositoryList: [],
-      use3D: false
+      repositoryList3D: [],
+      use3D: true
     }
   },
   computed: {
@@ -104,7 +105,8 @@ export default {
       this.projectDao
         .loadUserRepositoryList(username)
         .then(repositoryList => {
-          this.repositoryList = repositoryList
+          this.repositoryList = JSON.parse(JSON.stringify(repositoryList))
+          this.repositoryList3D = JSON.parse(JSON.stringify(repositoryList))
         })
         .catch(error => {
           console.log(error)
@@ -127,7 +129,8 @@ export default {
   watch: {
     '$store.state.userinfo.repositoryBeanList': {
       handler: function(newVal) {
-        this.repositoryList = newVal
+        this.repositoryList = JSON.parse(JSON.stringify(newVal))
+        this.repositoryList3D = JSON.parse(JSON.stringify(newVal))
       },
       deep: true
     }
@@ -139,6 +142,7 @@ export default {
     // is dev mode ? set mock data
     if (env.isDevMode()) {
       this.repositoryList = MockData.getRepositoryList()
+      this.repositoryList3D = MockData.getRepositoryList()
     }
   },
   created() {
