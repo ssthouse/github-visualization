@@ -3,13 +3,13 @@ import * as D3 from 'd3'
 import env from './util/env'
 
 import fontPath from '../assets/fonts/gentilis_regular.typeface.json'
-console.log(fontPath)
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 class GithubViewThree {
   constructor(containerId) {
     this.containerId = containerId
     // this method need network
+    // this.initScene()
     this.loadFont()
   }
 
@@ -70,15 +70,6 @@ class GithubViewThree {
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
     var cube = new THREE.Mesh(geometry, material)
     this.scene.add(cube)
-  }
-
-  addBall(xIndex, yIndex, radius, name) {
-    var geometry = new THREE.SphereGeometry(radius, 32, 32)
-    var material = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
-    var sphere = new THREE.Mesh(geometry, material)
-    sphere.name = name
-    this.scene.add(sphere)
-    sphere.position.set(xIndex, yIndex, 0)
   }
 
   addTextsToScene() {
@@ -170,6 +161,7 @@ class GithubViewThree {
     this.textGroup = new THREE.Group()
     this.textGroup.position.z = 0
     this.scene.add(this.textGroup)
+    // this.loadFont()
   }
 
   loadFont() {
@@ -186,7 +178,6 @@ class GithubViewThree {
   }
 
   drawProjects(reporitoryList) {
-    const self = this
     this.initScene()
     this.reporitoryList = reporitoryList
 
@@ -200,7 +191,7 @@ class GithubViewThree {
       .range([0, 100])
 
     this.addBallsToScene()
-    this.addTextsToScene()
+    // this.addTextsToScene()
     // use d3 to calculate the position of each circle
     this.simulation = D3.forceSimulation(this.reporitoryList)
       .force('charge', D3.forceManyBody())
@@ -210,10 +201,13 @@ class GithubViewThree {
       )
       .force('forceX', D3.forceX(0).strength(0.05))
       .force('forceY', D3.forceY(0).strength(0.05))
-      .on('tick', function() {
-        self.updateBallIndex()
-        self.updateTextsIndex()
-      })
+  }
+
+  generateBallMesh(xIndex, yIndex, radius, name) {
+    var geometry = new THREE.SphereGeometry(radius, 32, 32)
+    var sphere = new THREE.Mesh(geometry, this.ballMaterial)
+    sphere.position.set(xIndex, yIndex, 0)
+    return sphere
   }
 
   addBallsToScene() {
@@ -221,6 +215,8 @@ class GithubViewThree {
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
     }
+    const ballMeshList = []
+    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
     const circles = D3.select(this.virtualElement)
       .selectAll('circle')
       .data(this.reporitoryList)
@@ -228,14 +224,25 @@ class GithubViewThree {
       .enter()
       .each(function(d, i) {
         const datum = D3.select(this).datum()
-        self.addBall(
-          self.indexScale(datum.x),
-          self.indexScale(datum.y),
-          self.volumeScale(datum.count),
-          i
+        ballMeshList.push(
+          self.generateBallMesh(
+            self.indexScale(datum.x),
+            self.indexScale(datum.y),
+            self.volumeScale(datum.count),
+            i
+          )
         )
       })
       .append('circle')
+
+    // merge all ball geo & and them to scene
+    const parentGeo = new THREE.CylinderGeometry(1, 1, 0, 16)
+    ballMeshList.forEach(ballMesh => {
+      ballMesh.updateMatrix()
+      parentGeo.merge(ballMesh.geometry, ballMesh.matrix)
+    })
+    const parentMesh = new THREE.Mesh(parentGeo, this.ballMaterial)
+    this.scene.add(parentMesh)
   }
 
   updateBallIndex() {
