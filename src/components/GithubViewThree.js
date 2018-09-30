@@ -188,13 +188,12 @@ class GithubViewThree {
     this.calcluate3DLayout()
 
     // initial scale
-    this.volumeScale = D3.scalePow()
-      .exponent(1 / 3)
-      .domain(D3.extent(this.reporitoryList, d => d.count))
-      .range([1, 8])
-    this.indexScale = D3.scaleLinear()
+    this.volumeScale = D3.scaleLinear()
       .domain([0, 500])
       .range([0, 50])
+    this.indexScale = D3.scaleLinear()
+      .domain([0, 500])
+      .range([-25, 25])
 
     this.addBallsToScene()
   }
@@ -206,9 +205,8 @@ class GithubViewThree {
       .padding(5)
     const rootData = D3.hierarchy({
       children: this.reporitoryList
-    }).sum(d => Math.sqrt(d.count))
+    }).sum(d => Math.pow(d.count, 1 / 3))
     this.data = pack(rootData).leaves()
-    console.log(this.data)
   }
 
   generateBallMesh(xIndex, yIndex, radius, name) {
@@ -238,7 +236,7 @@ class GithubViewThree {
           self.generateBallMesh(
             self.indexScale(datum.x),
             self.indexScale(datum.y),
-            self.indexScale(datum.r),
+            self.volumeScale(datum.r),
             i
           )
         )
