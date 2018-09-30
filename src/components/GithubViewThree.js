@@ -10,10 +10,10 @@ class GithubViewThree {
     this.containerId = containerId
     // this method need network
     // this.initScene()
-    this.loadFont()
+    this.loadFont_()
   }
 
-  initScene() {
+  initScene_() {
     var contaienrElement = document.getElementById(this.containerId)
     this.scene = new THREE.Scene()
 
@@ -27,11 +27,11 @@ class GithubViewThree {
     contaienrElement.appendChild(this.renderer.domElement)
 
     this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
-    this.camera.position.z = 200
+    this.camera.position.z = 350
     this.camera.position.y = 50
     this.camera.position.x = 50
     this.camera.lookAt(0, 0, 0)
-    this.controls = new OrbitControls(this.camera)
+    this.controls = new OrbitControls(this.camera, contaienrElement)
 
     // add light
     var light = new THREE.AmbientLight(0x404040, 1) // soft white light
@@ -40,22 +40,28 @@ class GithubViewThree {
     spotLight.position.set(0, 0, 200)
     spotLight.lookAt(0, 0, 0)
     this.scene.add(spotLight)
-    this.addGround()
+    this.addGround_()
     // load text related resource
     this.loadText()
-    this.addAxisForDev()
-    this.animate()
+    this.addAxisForDev_()
+    this.animate_()
   }
 
-  addAxisForDev() {
+  animate_() {
+    requestAnimationFrame(() => this.animate_())
+    this.controls.update()
+    this.renderer.render(this.scene, this.camera)
+  }
+
+  addAxisForDev_() {
     if (env.isDevMode()) {
       let axes = new THREE.AxisHelper(100)
       this.scene.add(axes)
     }
   }
 
-  addGround() {
-    var geometry = new THREE.PlaneGeometry(400, 400, 32)
+  addGround_() {
+    var geometry = new THREE.PlaneGeometry(350, 350, 32)
     var material = new THREE.MeshLambertMaterial({
       color: 0xeeeeee,
       side: THREE.DoubleSide
@@ -63,6 +69,13 @@ class GithubViewThree {
     var plane = new THREE.Mesh(geometry, material)
     plane.position.z = -100
     this.scene.add(plane)
+  }
+
+  loadFont_() {
+    const loader = new THREE.FontLoader()
+    loader.load(fontPath, response => {
+      this.font = response
+    })
   }
 
   addTextsToScene() {
@@ -157,45 +170,32 @@ class GithubViewThree {
     // this.loadFont()
   }
 
-  loadFont() {
-    const loader = new THREE.FontLoader()
-    loader.load(fontPath, response => {
-      this.font = response
-    })
-  }
-
-  animate() {
-    requestAnimationFrame(() => this.animate())
-    this.controls.update()
-    this.renderer.render(this.scene, this.camera)
-  }
-
   /**
    * main function exposed
    */
   drawProjects(reporitoryList) {
-    this.initScene()
+    this.initScene_()
     this.reporitoryList = reporitoryList
 
-    // use d3 to calculate the position of each circle
-    this.calcluate3DLayout()
-
     // initial scale
+    this.layoutSize = 500
+    const sceneSize = 200
+    // use d3 to calculate the position of each circle
+    this.calcluate3DLayout_()
     this.volumeScale = D3.scaleLinear()
-      .domain([0, 500])
-      .range([0, 50])
+      .domain([0, this.layoutSize])
+      .range([0, sceneSize])
     this.indexScale = D3.scaleLinear()
-      .domain([0, 500])
-      .range([-25, 25])
+      .domain([0, this.layoutSize])
+      .range([-sceneSize / 2, sceneSize / 2])
 
-    this.addBallsToScene()
+    this.addBallsToScene_()
     // this.addMergedBallsToScene()
   }
 
-  calcluate3DLayout() {
-    this.packSize = 500
+  calcluate3DLayout_() {
     const pack = D3.pack()
-      .size([this.packSize, this.packSize])
+      .size([this.layoutSize, this.layoutSize])
       .padding(5)
     const rootData = D3.hierarchy({
       children: this.reporitoryList
@@ -203,7 +203,7 @@ class GithubViewThree {
     this.data = pack(rootData).leaves()
   }
 
-  generateBallMesh(xIndex, yIndex, radius, name) {
+  generateBallMesh_(xIndex, yIndex, radius, name) {
     // console.log(`xIndex: ${xIndex}   yIndex: ${yIndex}`)
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
     var sphere = new THREE.Mesh(geometry, this.ballMaterial)
@@ -211,7 +211,7 @@ class GithubViewThree {
     return sphere
   }
 
-  addBallsToScene() {
+  addBallsToScene_() {
     const self = this
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
@@ -225,7 +225,7 @@ class GithubViewThree {
       .each(function(d, i) {
         const datum = D3.select(this).datum()
         self.scene.add(
-          self.generateBallMesh(
+          self.generateBallMesh_(
             self.indexScale(datum.x),
             self.indexScale(datum.y),
             self.volumeScale(datum.r),
@@ -236,7 +236,7 @@ class GithubViewThree {
       .append('circle')
   }
 
-  addMergedBallsToScene() {
+  addMergedBallsToScene_() {
     const self = this
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
@@ -251,7 +251,7 @@ class GithubViewThree {
       .each(function(d, i) {
         const datum = D3.select(this).datum()
         ballMeshList.push(
-          self.generateBallMesh(
+          self.generateBallMesh_(
             self.indexScale(datum.x),
             self.indexScale(datum.y),
             self.volumeScale(datum.r),
@@ -269,21 +269,6 @@ class GithubViewThree {
     })
     const parentMesh = new THREE.Mesh(parentGeo, this.ballMaterial)
     this.scene.add(parentMesh)
-  }
-
-  updateBallIndex() {
-    const self = this
-    if (!this.virtualElement) {
-      this.virtualElement = document.createElement('svg')
-    }
-    D3.select(this.virtualElement)
-      .selectAll('circle')
-      .data(this.reporitoryList)
-      .each(function(d, i) {
-        const datum = D3.select(this).datum()
-        self.scene.getObjectByName(i).position.x = self.indexScale(datum.x)
-        self.scene.getObjectByName(i).position.y = self.indexScale(datum.y)
-      })
   }
 }
 
