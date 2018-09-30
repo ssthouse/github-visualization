@@ -43,6 +43,8 @@ class GithubViewThree {
     this.addGround_()
     // load text related resource
     this.loadText()
+    // TODO test use charMap cache
+    this.loadAlphabetGeoMap()
     this.addAxisForDev_()
     this.animate_()
   }
@@ -71,6 +73,25 @@ class GithubViewThree {
     this.scene.add(plane)
   }
 
+  loadAlphabetGeoMap() {
+    this.charGeoMap = new Map()
+    this.charWidthMap = new Map()
+    const chars =
+      '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-./?'
+    chars.split('').forEach(char => {
+      const textGeo = new THREE.TextGeometry(char, {
+        font: this.font,
+        size: 1.4,
+        height: 0.04
+      })
+      textGeo.computeBoundingBox()
+      const width = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x
+      this.charGeoMap.set(char, textGeo)
+      this.charWidthMap.set(char, width)
+    })
+    console.log(this.charGeoMap)
+  }
+
   loadFont_() {
     const loader = new THREE.FontLoader()
     loader.load(fontPath, response => {
@@ -78,96 +99,11 @@ class GithubViewThree {
     })
   }
 
-  addTextsToScene() {
-    const self = this
-    if (!this.virtualElement) {
-      this.virtualElement = document.createElement('svg')
-    }
-    const texts = D3.select(this.virtualElement)
-      .selectAll('text')
-      .data(this.data)
-    texts
-      .enter()
-      .each(function(d, i) {
-        const datum = D3.select(this).datum()
-        self.addText(
-          datum.name,
-          self.indexScale(datum.x),
-          self.indexScale(datum.y),
-          self.volumeScale(datum.count),
-          'text' + i
-        )
-      })
-      .append('text')
-  }
-
-  updateTextsIndex() {
-    const self = this
-    if (!this.virtualElement) {
-      this.virtualElement = document.createElement('svg')
-    }
-    D3.select(this.virtualElement)
-      .selectAll('text')
-      .data(this.reporitoryList)
-      .each(function(d, i) {
-        const datum = D3.select(this).datum()
-        const textMesh = self.scene.getObjectByName('text' + i)
-        if (!textMesh.geometry.boundingBox) {
-          textMesh.geometry.computeBoundingBox()
-        }
-        textMesh.position.x =
-          self.indexScale(datum.x) -
-          (textMesh.geometry.boundingBox.max.x -
-            textMesh.geometry.boundingBox.min.x) /
-            2
-        textMesh.position.y = self.indexScale(datum.y)
-      })
-  }
-
-  /**
-   *
-   * @param {number} xIndex
-   * @param {number} yIndex
-   * @param {number} size
-   * @param {String} name name should be 'text' + index
-   */
-  addText(text, xIndex, yIndex, radius, name) {
-    console.log('add text to scene')
-    // some default setting:
-    // let curveSegments = 4
-    // let bevelThickness = 2
-    // let bevelSize = 1.5
-    // let bevelEnabled = true
-    let textGeo = new THREE.TextGeometry(text, {
-      font: this.font,
-      size: 1,
-      height: 0.04
-      // curveSegments: curveSegments,
-      // bevelThickness: bevelThickness,
-      // bevelSize: bevelSize,
-      // bevelEnabled: bevelEnabled
-    })
-    // textGeo.computeBoundingBox()
-    // textGeo.computeVertexNormals()
-    // textGeo = new THREE.BufferGeometry().fromGeometry(textGeo)
-    let textMesh = new THREE.Mesh(textGeo, this.textMaterial)
-    // textMesh.position.x = xIndex
-    // textMesh.position.y = yIndex
-    textMesh.position.z = radius + 1
-    textMesh.name = name
-    this.textGroup.add(textMesh)
-  }
-
   loadText() {
-    // this.textMaterials = [
-    //   new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // for text
-    //   new THREE.MeshPhongMaterial({ color: 0xffffff }) // for side
-    // ]
-    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
     this.textGroup = new THREE.Group()
     this.textGroup.position.z = 0
     this.scene.add(this.textGroup)
-    // this.loadFont()
   }
 
   /**
@@ -179,7 +115,7 @@ class GithubViewThree {
 
     // initial scale
     this.layoutSize = 500
-    const sceneSize = 200
+    const sceneSize = 280
     // use d3 to calculate the position of each circle
     this.calcluate3DLayout_()
     this.volumeScale = D3.scaleLinear()
@@ -189,6 +125,7 @@ class GithubViewThree {
       .domain([0, this.layoutSize])
       .range([-sceneSize / 2, sceneSize / 2])
 
+    this.addTextsToScene()
     this.addBallsToScene_()
     // this.addMergedBallsToScene()
   }
@@ -203,8 +140,81 @@ class GithubViewThree {
     this.data = pack(rootData).leaves()
   }
 
+  addTextsToScene() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    const texts = D3.select(this.virtualElement)
+      .selectAll('text')
+      .data(this.data)
+    texts
+      .enter()
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.addTextWithCharGroup(
+          datum.data.name,
+          self.indexScale(datum.x),
+          self.indexScale(datum.y),
+          self.volumeScale(datum.r)
+        )
+      })
+      .append('text')
+  }
+
+  /**
+   *
+   * @param {number} xIndex
+   * @param {number} yIndex
+   * @param {number} size
+   */
+  addText(text, xIndex, yIndex, radius) {
+    console.log('add text to scene')
+    let textGeo = new THREE.TextGeometry(text, {
+      font: this.font,
+      size: 1.4,
+      height: 0.1
+    })
+    let textMesh = new THREE.Mesh(textGeo, this.textMaterial)
+    if (!textMesh.geometry.boundingBox) {
+      textMesh.geometry.computeBoundingBox()
+    }
+
+    const textWidth =
+      textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x
+    textMesh.position.set(xIndex - textWidth / 2, yIndex, radius + 2)
+    this.textGroup.add(textMesh)
+  }
+
+  addTextWithCharGroup(text, xIndex, yIndex, radius) {
+    const group = new THREE.Group()
+    const chars = text.split('')
+
+    let totalLen = 0
+    chars.forEach(char => {
+      if (!this.charWidthMap.get(char)) {
+        totalLen += 1
+        return
+      }
+      totalLen += this.charWidthMap.get(char)
+    })
+    const offset = totalLen / 2
+
+    for (let i = 0; i < chars.length; i++) {
+      const curCharGeo = this.charGeoMap.get(chars[i])
+      if (!curCharGeo) {
+        xIndex += 2
+        continue
+      }
+      const curMesh = new THREE.Mesh(curCharGeo, this.textMaterial)
+      curMesh.position.set(xIndex - offset, yIndex, radius + 2)
+      group.add(curMesh)
+      xIndex += this.charWidthMap.get(chars[i])
+    }
+    this.scene.add(group)
+  }
+
   generateBallMesh_(xIndex, yIndex, radius, name) {
-    // console.log(`xIndex: ${xIndex}   yIndex: ${yIndex}`)
     var geometry = new THREE.SphereGeometry(radius, 32, 32)
     var sphere = new THREE.Mesh(geometry, this.ballMaterial)
     sphere.position.set(xIndex, yIndex, 0)
@@ -236,6 +246,10 @@ class GithubViewThree {
       .append('circle')
   }
 
+  /**
+   * @deprecated
+   * even slower than addBallsToScene() due to merge function call
+   */
   addMergedBallsToScene_() {
     const self = this
     if (!this.virtualElement) {
