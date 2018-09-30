@@ -1,10 +1,16 @@
 import * as THREE from 'three.js'
 import * as D3 from 'd3'
+import env from './util/env'
+
+import fontPath from '../assets/fonts/gentilis_regular.typeface.json'
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 class GithubViewThree {
   constructor(containerId) {
     this.containerId = containerId
+    // this method need network
+    // this.initScene()
+    this.loadFont()
   }
 
   initScene() {
@@ -35,7 +41,17 @@ class GithubViewThree {
     spotLight.lookAt(0, 0, 0)
     this.scene.add(spotLight)
     this.addGround()
+    // load text related resource
+    this.loadText()
+    this.addAxisForDev()
     this.animate()
+  }
+
+  addAxisForDev() {
+    if (env.isDevMode()) {
+      let axes = new THREE.AxisHelper(100)
+      this.scene.add(axes)
+    }
   }
 
   addGround() {
@@ -49,20 +65,103 @@ class GithubViewThree {
     this.scene.add(plane)
   }
 
-  testAddCube() {
-    var geometry = new THREE.BoxGeometry(1, 1, 1)
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    var cube = new THREE.Mesh(geometry, material)
-    this.scene.add(cube)
+  addTextsToScene() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    const texts = D3.select(this.virtualElement)
+      .selectAll('text')
+      .data(this.data)
+    texts
+      .enter()
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        self.addText(
+          datum.name,
+          self.indexScale(datum.x),
+          self.indexScale(datum.y),
+          self.volumeScale(datum.count),
+          'text' + i
+        )
+      })
+      .append('text')
   }
 
-  addBall(xIndex, yIndex, radius, name) {
-    var geometry = new THREE.SphereGeometry(radius, 32, 32)
-    var material = new THREE.MeshLambertMaterial({ color: 0x554DB6AC })
-    var sphere = new THREE.Mesh(geometry, material)
-    sphere.name = name
-    this.scene.add(sphere)
-    sphere.position.set(xIndex, yIndex, 0)
+  updateTextsIndex() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    D3.select(this.virtualElement)
+      .selectAll('text')
+      .data(this.reporitoryList)
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        const textMesh = self.scene.getObjectByName('text' + i)
+        if (!textMesh.geometry.boundingBox) {
+          textMesh.geometry.computeBoundingBox()
+        }
+        textMesh.position.x =
+          self.indexScale(datum.x) -
+          (textMesh.geometry.boundingBox.max.x -
+            textMesh.geometry.boundingBox.min.x) /
+            2
+        textMesh.position.y = self.indexScale(datum.y)
+      })
+  }
+
+  /**
+   *
+   * @param {number} xIndex
+   * @param {number} yIndex
+   * @param {number} size
+   * @param {String} name name should be 'text' + index
+   */
+  addText(text, xIndex, yIndex, radius, name) {
+    console.log('add text to scene')
+    // some default setting:
+    // let curveSegments = 4
+    // let bevelThickness = 2
+    // let bevelSize = 1.5
+    // let bevelEnabled = true
+    let textGeo = new THREE.TextGeometry(text, {
+      font: this.font,
+      size: 1,
+      height: 0.04
+      // curveSegments: curveSegments,
+      // bevelThickness: bevelThickness,
+      // bevelSize: bevelSize,
+      // bevelEnabled: bevelEnabled
+    })
+    // textGeo.computeBoundingBox()
+    // textGeo.computeVertexNormals()
+    // textGeo = new THREE.BufferGeometry().fromGeometry(textGeo)
+    let textMesh = new THREE.Mesh(textGeo, this.textMaterial)
+    // textMesh.position.x = xIndex
+    // textMesh.position.y = yIndex
+    textMesh.position.z = radius + 1
+    textMesh.name = name
+    this.textGroup.add(textMesh)
+  }
+
+  loadText() {
+    // this.textMaterials = [
+    //   new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // for text
+    //   new THREE.MeshPhongMaterial({ color: 0xffffff }) // for side
+    // ]
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    this.textGroup = new THREE.Group()
+    this.textGroup.position.z = 0
+    this.scene.add(this.textGroup)
+    // this.loadFont()
+  }
+
+  loadFont() {
+    const loader = new THREE.FontLoader()
+    loader.load(fontPath, response => {
+      this.font = response
+    })
   }
 
   animate() {
@@ -71,33 +170,45 @@ class GithubViewThree {
     this.renderer.render(this.scene, this.camera)
   }
 
+  /**
+   * main function exposed
+   */
   drawProjects(reporitoryList) {
-    const self = this
     this.initScene()
     this.reporitoryList = reporitoryList
 
+    // use d3 to calculate the position of each circle
+    this.calcluate3DLayout()
+
     // initial scale
-    this.volumeScale = D3.scalePow()
-      .exponent(1 / 3)
-      .domain(D3.extent(this.reporitoryList, d => d.count))
-      .range([2, 16])
+    this.volumeScale = D3.scaleLinear()
+      .domain([0, 500])
+      .range([0, 50])
     this.indexScale = D3.scaleLinear()
-      .domain(D3.extent([0, 500]))
-      .range([0, 100])
+      .domain([0, 500])
+      .range([-25, 25])
 
     this.addBallsToScene()
-    // use d3 to calculate the position of each circle
-    this.simulation = D3.forceSimulation(this.reporitoryList)
-      .force('charge', D3.forceManyBody())
-      .force(
-        'collide',
-        D3.forceCollide().radius(d => this.volumeScale(d.count) + 12)
-      )
-      .force('forceX', D3.forceX(0).strength(0.05))
-      .force('forceY', D3.forceY(0).strength(0.05))
-      .on('tick', function() {
-        self.updateBallIndex()
-      })
+    // this.addMergedBallsToScene()
+  }
+
+  calcluate3DLayout() {
+    this.packSize = 500
+    const pack = D3.pack()
+      .size([this.packSize, this.packSize])
+      .padding(5)
+    const rootData = D3.hierarchy({
+      children: this.reporitoryList
+    }).sum(d => Math.pow(d.count, 1 / 3))
+    this.data = pack(rootData).leaves()
+  }
+
+  generateBallMesh(xIndex, yIndex, radius, name) {
+    // console.log(`xIndex: ${xIndex}   yIndex: ${yIndex}`)
+    var geometry = new THREE.SphereGeometry(radius, 32, 32)
+    var sphere = new THREE.Mesh(geometry, this.ballMaterial)
+    sphere.position.set(xIndex, yIndex, 0)
+    return sphere
   }
 
   addBallsToScene() {
@@ -105,21 +216,59 @@ class GithubViewThree {
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
     }
+    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
     const circles = D3.select(this.virtualElement)
       .selectAll('circle')
-      .data(this.reporitoryList)
+      .data(this.data)
     circles
       .enter()
       .each(function(d, i) {
         const datum = D3.select(this).datum()
-        self.addBall(
-          self.indexScale(datum.x),
-          self.indexScale(datum.y),
-          self.volumeScale(datum.count),
-          i
+        self.scene.add(
+          self.generateBallMesh(
+            self.indexScale(datum.x),
+            self.indexScale(datum.y),
+            self.volumeScale(datum.r),
+            i
+          )
         )
       })
       .append('circle')
+  }
+
+  addMergedBallsToScene() {
+    const self = this
+    if (!this.virtualElement) {
+      this.virtualElement = document.createElement('svg')
+    }
+    const ballMeshList = []
+    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
+    const circles = D3.select(this.virtualElement)
+      .selectAll('circle')
+      .data(this.data)
+    circles
+      .enter()
+      .each(function(d, i) {
+        const datum = D3.select(this).datum()
+        ballMeshList.push(
+          self.generateBallMesh(
+            self.indexScale(datum.x),
+            self.indexScale(datum.y),
+            self.volumeScale(datum.r),
+            i
+          )
+        )
+      })
+      .append('circle')
+
+    // merge all ball geo & and them to scene
+    const parentGeo = new THREE.CylinderGeometry(1, 1, 0, 16)
+    ballMeshList.forEach(ballMesh => {
+      ballMesh.updateMatrix()
+      parentGeo.merge(ballMesh.geometry, ballMesh.matrix)
+    })
+    const parentMesh = new THREE.Mesh(parentGeo, this.ballMaterial)
+    this.scene.add(parentMesh)
   }
 
   updateBallIndex() {

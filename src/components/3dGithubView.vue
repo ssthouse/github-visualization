@@ -12,17 +12,20 @@ import GithubViewThree from './GithubViewThree'
 export default {
   data() {
     return {
-      githubView: new GithubViewThree('view-container')
+      githubView: null
     }
   },
   props: ['repositoryList'],
   methods: {
     logTest() {
-      // console.log(this.repositoryList)
       this.githubView.drawProjects(this.repositoryList)
     }
   },
-  mounted() {}
+  mounted() {
+    if (!this.githubView) {
+      this.githubView = new GithubViewThree('view-container')
+    }
+  }
 }
 </script>
 
