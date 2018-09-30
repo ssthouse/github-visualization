@@ -13,7 +13,7 @@
 
       <!-- action list -->
       <v-flex md6 offset-md3 xs12>
-        <v-card style="width: 100%;">
+        <v-card style="width: 100%; padding: 16px;">
           <v-card-title primary-title class="action-title">Support actions:</v-card-title>
           <div style="display: flex; flex-direction: column">
             <v-chip selected>
