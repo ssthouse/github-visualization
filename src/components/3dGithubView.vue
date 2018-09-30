@@ -37,7 +37,7 @@ export default {
   flex-direction: column;
 
   #view-container {
-    height: 500px;
+    height: 700px;
     width: 100%;
   }
 }

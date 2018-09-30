@@ -43,6 +43,8 @@ class GithubViewThree {
     this.addGround_()
     // load text related resource
     this.loadText()
+    // TODO test use charMap cache
+    this.loadAlphabetGeoMap()
     this.addAxisForDev_()
     this.animate_()
   }
@@ -71,6 +73,25 @@ class GithubViewThree {
     this.scene.add(plane)
   }
 
+  loadAlphabetGeoMap() {
+    this.charGeoMap = new Map()
+    this.charWidthMap = new Map()
+    const chars =
+      '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-./?'
+    chars.split('').forEach(char => {
+      const textGeo = new THREE.TextGeometry(char, {
+        font: this.font,
+        size: 1.4,
+        height: 0.04
+      })
+      textGeo.computeBoundingBox()
+      const width = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x
+      this.charGeoMap.set(char, textGeo)
+      this.charWidthMap.set(char, width)
+    })
+    console.log(this.charGeoMap)
+  }
+
   loadFont_() {
     const loader = new THREE.FontLoader()
     loader.load(fontPath, response => {
@@ -79,7 +100,7 @@ class GithubViewThree {
   }
 
   loadText() {
-    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
     this.textGroup = new THREE.Group()
     this.textGroup.position.z = 0
     this.scene.add(this.textGroup)
@@ -94,7 +115,7 @@ class GithubViewThree {
 
     // initial scale
     this.layoutSize = 500
-    const sceneSize = 200
+    const sceneSize = 280
     // use d3 to calculate the position of each circle
     this.calcluate3DLayout_()
     this.volumeScale = D3.scaleLinear()
@@ -130,11 +151,8 @@ class GithubViewThree {
     texts
       .enter()
       .each(function(d, i) {
-        if (i > 10) {
-          return
-        }
         const datum = D3.select(this).datum()
-        self.addText(
+        self.addTextWithCharGroup(
           datum.data.name,
           self.indexScale(datum.x),
           self.indexScale(datum.y),
@@ -155,7 +173,7 @@ class GithubViewThree {
     let textGeo = new THREE.TextGeometry(text, {
       font: this.font,
       size: 1.4,
-      height: 0.04
+      height: 0.1
     })
     let textMesh = new THREE.Mesh(textGeo, this.textMaterial)
     if (!textMesh.geometry.boundingBox) {
@@ -166,6 +184,34 @@ class GithubViewThree {
       textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x
     textMesh.position.set(xIndex - textWidth / 2, yIndex, radius + 2)
     this.textGroup.add(textMesh)
+  }
+
+  addTextWithCharGroup(text, xIndex, yIndex, radius) {
+    const group = new THREE.Group()
+    const chars = text.split('')
+
+    let totalLen = 0
+    chars.forEach(char => {
+      if (!this.charWidthMap.get(char)) {
+        totalLen += 1
+        return
+      }
+      totalLen += this.charWidthMap.get(char)
+    })
+    const offset = totalLen / 2
+
+    for (let i = 0; i < chars.length; i++) {
+      const curCharGeo = this.charGeoMap.get(chars[i])
+      if (!curCharGeo) {
+        xIndex += 2
+        continue
+      }
+      const curMesh = new THREE.Mesh(curCharGeo, this.textMaterial)
+      curMesh.position.set(xIndex - offset, yIndex, radius + 2)
+      group.add(curMesh)
+      xIndex += this.charWidthMap.get(chars[i])
+    }
+    this.scene.add(group)
   }
 
   generateBallMesh_(xIndex, yIndex, radius, name) {
