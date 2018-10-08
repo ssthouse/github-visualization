@@ -51,6 +51,12 @@ class GithubViewThree {
     this.animate_()
   }
 
+  clear() {
+    // clear ball & text group
+    this.ballGroup.children.forEach(item => this.ballGroup.remove(item))
+    this.textGroup.children.forEach(item => this.textGroup.remove(item))
+  }
+
   animate_() {
     requestAnimationFrame(() => this.animate_())
     this.controls.update()
@@ -108,10 +114,7 @@ class GithubViewThree {
     if (!this.scene) {
       this.initScene_()
     }
-
-    // clear ball & text group
-    this.ballGroup.children.forEach(item => this.ballGroup.remove(item))
-    this.textGroup.children.forEach(item => this.textGroup.remove(item))
+    this.clear()
 
     this.reporitoryList = reporitoryList
     // initial scale

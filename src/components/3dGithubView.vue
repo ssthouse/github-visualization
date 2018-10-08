@@ -3,6 +3,7 @@
     <div id="view-container">
     </div>
     <v-btn @click='logTest'>show projects</v-btn>
+    <v-btn @click='clear'>clear</v-btn>
   </div>
 </template>
 
@@ -19,6 +20,9 @@ export default {
   methods: {
     logTest() {
       this.githubView.drawProjects(this.repositoryList)
+    },
+    clear() {
+      this.githubView.clear()
     }
   },
   mounted() {
