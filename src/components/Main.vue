@@ -56,7 +56,7 @@
       <!-- user's project view -->
       <project-view v-show="!use3D" :repositoryList="repositoryList"></project-view>
       <!-- github view in 3d -->
-      <github-view-3d v-show="use3D" :repositoryList="repositoryList3D"></github-view-3d>
+      <github-view-3d v-show="use3D" :visible="use3D" :repositoryList="repositoryList3D"></github-view-3d>
     </div>
 
     <!-- snackbar -->

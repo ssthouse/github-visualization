@@ -2,8 +2,6 @@
   <div class='container'>
     <div id="view-container">
     </div>
-    <v-btn @click='logTest'>show projects</v-btn>
-    <v-btn @click='clear'>clear</v-btn>
   </div>
 </template>
 
@@ -13,10 +11,11 @@ import GithubViewThree from './GithubViewThree'
 export default {
   data() {
     return {
-      githubView: null
+      githubView: null,
+      rendered: false
     }
   },
-  props: ['repositoryList'],
+  props: ['repositoryList', 'visible'],
   methods: {
     logTest() {
       this.githubView.drawProjects(this.repositoryList)
@@ -28,6 +27,16 @@ export default {
   mounted() {
     if (!this.githubView) {
       this.githubView = new GithubViewThree('view-container')
+    }
+  },
+  watch: {
+    visible: function(newVal) {
+      if (newVal && !this.rendered) {
+        this.rendered = true
+        setTimeout(() => {
+          this.githubView.drawProjects(this.repositoryList)
+        }, 500)
+      }
     }
   }
 }
