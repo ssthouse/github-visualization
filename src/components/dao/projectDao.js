@@ -107,29 +107,33 @@ export default class ProjectDao {
         }
       }`
     }
-    http
-      .post('', JSON.stringify(queryJson))
-      .then(response => {
-        const user = response.data.data.user
-        this.store.commit('updateUserInfo', {
-          avatarUrl: user.avatarUrl
+    return new Promise((resolve, reject) => {
+      http
+        .post('', JSON.stringify(queryJson))
+        .then(response => {
+          const user = response.data.data.user
+          this.store.commit('updateUserInfo', {
+            avatarUrl: user.avatarUrl
+          })
+          this.store.commit(
+            'updateRepositoryBeanList',
+            this.getRepositoryBeanListFromQuery(response.data.data)
+          )
+          this.store.commit(
+            'updateFollowerUserList',
+            this.getFollowerUserList(response.data.data)
+          )
+          this.store.commit(
+            'updateFollowingUserList',
+            this.getFollowingUserList(response.data.data)
+          )
+          resolve()
         })
-        this.store.commit(
-          'updateRepositoryBeanList',
-          this.getRepositoryBeanListFromQuery(response.data.data)
-        )
-        this.store.commit(
-          'updateFollowerUserList',
-          this.getFollowerUserList(response.data.data)
-        )
-        this.store.commit(
-          'updateFollowingUserList',
-          this.getFollowingUserList(response.data.data)
-        )
-      })
-      .catch(response => {
-        console.log('~~~~~~~~~~~~~~~~error get all projects')
-      })
+        .catch(err => {
+          reject(err)
+          console.log('~~~~~~~~~~~~~~~~error get all projects')
+        })
+    })
   }
 
   loadUserRepositoryList(username) {

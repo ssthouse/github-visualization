@@ -16,6 +16,11 @@ class GithubViewThree {
   initScene_() {
     var contaienrElement = document.getElementById(this.containerId)
     this.scene = new THREE.Scene()
+    this.ballGroup = new THREE.Group()
+    this.scene.add(this.ballGroup)
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+    this.textGroup = new THREE.Group()
+    this.scene.add(this.textGroup)
 
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     this.renderer.setClearColor(0xeeeeee, 0.3)
@@ -41,12 +46,15 @@ class GithubViewThree {
     spotLight.lookAt(0, 0, 0)
     this.scene.add(spotLight)
     this.addGround_()
-    // load text related resource
-    this.loadText()
-    // TODO test use charMap cache
     this.loadAlphabetGeoMap()
     this.addAxisForDev_()
     this.animate_()
+  }
+
+  clear() {
+    // clear ball & text group
+    this.ballGroup.children.forEach(item => this.ballGroup.remove(item))
+    this.textGroup.children.forEach(item => this.textGroup.remove(item))
   }
 
   animate_() {
@@ -99,20 +107,16 @@ class GithubViewThree {
     })
   }
 
-  loadText() {
-    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-    this.textGroup = new THREE.Group()
-    this.textGroup.position.z = 0
-    this.scene.add(this.textGroup)
-  }
-
   /**
    * main function exposed
    */
   drawProjects(reporitoryList) {
-    this.initScene_()
-    this.reporitoryList = reporitoryList
+    if (!this.scene) {
+      this.initScene_()
+    }
+    this.clear()
 
+    this.reporitoryList = reporitoryList
     // initial scale
     this.layoutSize = 500
     const sceneSize = 280
@@ -125,7 +129,7 @@ class GithubViewThree {
       .domain([0, this.layoutSize])
       .range([-sceneSize / 2, sceneSize / 2])
 
-    this.addTextsToScene()
+    this.addTextsToScene_()
     this.addBallsToScene_()
     // this.addMergedBallsToScene()
   }
@@ -140,7 +144,7 @@ class GithubViewThree {
     this.data = pack(rootData).leaves()
   }
 
-  addTextsToScene() {
+  addTextsToScene_() {
     const self = this
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
@@ -150,6 +154,7 @@ class GithubViewThree {
       .data(this.data)
     texts
       .enter()
+      .merge(texts)
       .each(function(d, i) {
         const datum = D3.select(this).datum()
         self.addTextWithCharGroup(
@@ -159,17 +164,13 @@ class GithubViewThree {
           self.volumeScale(datum.r)
         )
       })
-      .append('text')
   }
 
   /**
-   *
-   * @param {number} xIndex
-   * @param {number} yIndex
-   * @param {number} size
+   * @deprecated
+   * too slow.... use addTextWithCharGroup instead
    */
   addText(text, xIndex, yIndex, radius) {
-    console.log('add text to scene')
     let textGeo = new THREE.TextGeometry(text, {
       font: this.font,
       size: 1.4,
@@ -211,7 +212,7 @@ class GithubViewThree {
       group.add(curMesh)
       xIndex += this.charWidthMap.get(chars[i])
     }
-    this.scene.add(group)
+    this.textGroup.add(group)
   }
 
   generateBallMesh_(xIndex, yIndex, radius, name) {
@@ -232,9 +233,10 @@ class GithubViewThree {
       .data(this.data)
     circles
       .enter()
+      .merge(circles)
       .each(function(d, i) {
         const datum = D3.select(this).datum()
-        self.scene.add(
+        self.ballGroup.add(
           self.generateBallMesh_(
             self.indexScale(datum.x),
             self.indexScale(datum.y),
@@ -243,7 +245,6 @@ class GithubViewThree {
           )
         )
       })
-      .append('circle')
   }
 
   /**
@@ -282,7 +283,7 @@ class GithubViewThree {
       parentGeo.merge(ballMesh.geometry, ballMesh.matrix)
     })
     const parentMesh = new THREE.Mesh(parentGeo, this.ballMaterial)
-    this.scene.add(parentMesh)
+    this.ballGroup.add(parentMesh)
   }
 }
 

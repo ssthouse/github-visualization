@@ -5,7 +5,8 @@
       <v-flex md6 offset-md3>
         <div class="flex-row">
           <v-text-field label="github usename" v-model="username" class="input-group--focused"></v-text-field>
-          <v-btn @click="showProjects">show</v-btn>
+          <v-btn @click="showProjects" :loading="loading" :disabled="loading">
+            show</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -57,6 +58,11 @@
       <!-- github view in 3d -->
       <github-view-3d v-show="use3D" :repositoryList="repositoryList3D"></github-view-3d>
     </div>
+
+    <!-- snackbar -->
+    <v-snackbar v-model="snackbar" :timeout="2000">
+      {{ snackbarText }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -83,7 +89,10 @@ export default {
       userRecorder,
       repositoryList: [],
       repositoryList3D: [],
-      use3D: false
+      use3D: false,
+      loading: false,
+      snackbar: false,
+      snackbarText: 'text'
     }
   },
   computed: {
@@ -96,10 +105,25 @@ export default {
   },
   methods: {
     showProjects() {
+      this.loading = true
       this.updateUrl(this.username)
       this.$store.commit('updateUsername', this.username)
-      this.projectDao.getAllProjects()
+      this.projectDao.getAllProjects().then(
+        () => {
+          this.loading = false
+          this.showSnackbar('success loading your github repo ~')
+        },
+        err => {
+          console.log('fail' + err)
+          this.loading = false
+          this.showSnackbar('failed to fetch data, please try again~')
+        }
+      )
       this.userRecorder.addRecord(this.username)
+    },
+    showSnackbar(text) {
+      this.snackbar = true
+      this.snackbarText = text
     },
     selectUser(username) {
       this.projectDao
