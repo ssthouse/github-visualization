@@ -9,7 +9,6 @@ class GithubViewThree {
   constructor(containerId) {
     this.containerId = containerId
     // this method need network
-    // this.initScene()
     this.loadFont_()
   }
 
