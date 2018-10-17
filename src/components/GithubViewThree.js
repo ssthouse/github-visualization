@@ -12,6 +12,10 @@ class GithubViewThree {
     this.loadFont_()
   }
 
+  isReady() {
+    return this.font !== undefined
+  }
+
   initScene_() {
     var contaienrElement = document.getElementById(this.containerId)
     this.scene = new THREE.Scene()
@@ -52,8 +56,8 @@ class GithubViewThree {
 
   clear() {
     // clear ball & text group
-    this.ballGroup.children.forEach(item => this.ballGroup.remove(item))
-    this.textGroup.children.forEach(item => this.textGroup.remove(item))
+    this.ballGroup.children = []
+    this.textGroup.children = []
   }
 
   animate_() {

@@ -36,7 +36,13 @@ export default {
         }, 500)
       }
     },
-    repositoryList: function(newRepoList) {}
+    repositoryList: function(newRepoList) {
+      if (newRepoList.length === 0) return
+      this.repositoryList = newRepoList
+      if (this.githubView.isReady()) {
+        this.githubView.drawProjects(this.repositoryList)
+      }
+    }
   }
 }
 </script>
