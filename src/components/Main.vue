@@ -89,7 +89,7 @@ export default {
       userRecorder,
       repositoryList: [],
       repositoryList3D: [],
-      use3D: false,
+      use3D: true,
       loading: false,
       selectUserLoading: false,
       snackbar: false,
@@ -175,7 +175,6 @@ export default {
   },
   created() {
     env.setEnv(process.env)
-    this.use3D = env.isDevMode()
     this.initUsernameFromUrl()
   }
 }
