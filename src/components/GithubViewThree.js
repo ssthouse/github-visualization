@@ -85,6 +85,7 @@ class GithubViewThree {
   }
 
   loadAlphabetGeoMap() {
+    const fontSize = 2.4
     this.charGeoMap = new Map()
     this.charWidthMap = new Map()
     const chars =
@@ -92,7 +93,7 @@ class GithubViewThree {
     chars.split('').forEach(char => {
       const textGeo = new THREE.TextGeometry(char, {
         font: this.font,
-        size: 1.4,
+        size: fontSize,
         height: 0.04
       })
       textGeo.computeBoundingBox()
