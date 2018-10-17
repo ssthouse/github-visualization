@@ -36,7 +36,10 @@
     <!-- follwing user list -->
     <users-card :userList="followingUserList" :loading="selectUserLoading" @selectUser="selectUser"></users-card>
 
-    <v-switch label="Use 3D" v-model="use3D"></v-switch>
+    <v-btn-toggle v-model="viewMode" style="margin-top: 32px;">
+      <v-btn flat value="2D">2D Mode</v-btn>
+      <v-btn flat value="3D">3D Mode</v-btn>
+    </v-btn-toggle>
 
     <div>
       <!-- user's project view -->
@@ -70,12 +73,12 @@ export default {
   },
   data() {
     return {
+      viewMode: '3D',
       projectDao: new ProjectDao(),
       username: '',
       userRecorder,
       repositoryList: [],
       repositoryList3D: [],
-      use3D: true,
       loading: false,
       selectUserLoading: false,
       snackbar: false,
@@ -88,6 +91,9 @@ export default {
     },
     followingUserList() {
       return this.$store.state.userinfo.followingUserList
+    },
+    use3D() {
+      return this.viewMode === '3D'
     }
   },
   methods: {
