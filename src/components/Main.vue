@@ -15,23 +15,9 @@
       <!-- action list -->
       <v-flex md6 offset-md3 xs12>
         <v-card style="width: 100%; padding: 16px;">
-          <v-card-title primary-title class="action-title">Support actions:</v-card-title>
-          <div style="display: flex; flex-direction: column">
-            <v-chip selected>
-              <strong>Zoom by mouse wheel</strong>
-            </v-chip>
-            <v-chip selected>
-              <strong>Circles can be draged</strong>
-            </v-chip>
-            <v-chip selected>
-              <strong>Click following user's avatar to see their repositories</strong>
-            </v-chip>
-            <v-chip selected>
-              <strong>Hover on circle to see repository commit number</strong>
-            </v-chip>
-
+          <div style="display: flex; flex-direction: column; margin-top: -32px;">
             <h3 style="margin-top: 20px;">
-              <strong>Hint: username is the last part of your github profile page:</strong>
+              <strong>Hint: username is the last part of your github profile page's URL:</strong>
               <br/>
               <strong>eg: https://github.com/ssthouse ==> ssthouse</strong>
             </h3>
