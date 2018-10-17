@@ -6,11 +6,13 @@
       </v-avatar>
       <strong>People you follow:</strong>
     </v-chip>
-    <v-chip @click="chooseUser(user.username)" v-for="user in userList" v-bind:key="user.id" selected class="mouseHand">
+    <v-chip class="user-chip mouseHand" @click="chooseUser(user.username)" v-for="user in userList" v-bind:key="user.id" selected>
       <v-avatar color="teal">
         <img :src="user.avatarUrl">
       </v-avatar>
       {{`${user.username}`}}
+      <v-progress-circular class="loading-circle" :style="{opacity : loading ? 1: 0}" indeterminate color="teal" :loading="loading">
+      </v-progress-circular>
     </v-chip>
   </div>
 </template>
@@ -21,7 +23,7 @@ export default {
   data() {
     return {}
   },
-  props: ['userList'],
+  props: ['userList', 'loading'],
   methods: {
     chooseUser(username) {
       this.$emit('selectUser', username)
@@ -35,5 +37,15 @@ export default {
 <style scoped lang="less">
 .mouseHand * {
   cursor: pointer;
+}
+.user-chip {
+  position: relative;
+
+  .loading-circle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
 }
 </style>

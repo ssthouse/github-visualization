@@ -17,9 +17,6 @@ export default {
   },
   props: ['repositoryList', 'visible'],
   methods: {
-    logTest() {
-      this.githubView.drawProjects(this.repositoryList)
-    },
     clear() {
       this.githubView.clear()
     }
@@ -31,11 +28,19 @@ export default {
   },
   watch: {
     visible: function(newVal) {
+      // render 3D view when first enter
       if (newVal && !this.rendered) {
         this.rendered = true
         setTimeout(() => {
           this.githubView.drawProjects(this.repositoryList)
         }, 500)
+      }
+    },
+    repositoryList: function(newRepoList) {
+      if (newRepoList.length === 0) return
+      this.repositoryList = newRepoList
+      if (this.githubView.isReady()) {
+        this.githubView.drawProjects(this.repositoryList)
       }
     }
   }

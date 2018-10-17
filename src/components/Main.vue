@@ -48,7 +48,7 @@
     </v-layout>
 
     <!-- follwing user list -->
-    <users-card :userList="followingUserList" @selectUser="selectUser"></users-card>
+    <users-card :userList="followingUserList" :loading="selectUserLoading" @selectUser="selectUser"></users-card>
 
     <v-switch label="Use 3D" v-model="use3D"></v-switch>
 
@@ -91,6 +91,7 @@ export default {
       repositoryList3D: [],
       use3D: false,
       loading: false,
+      selectUserLoading: false,
       snackbar: false,
       snackbarText: 'text'
     }
@@ -126,14 +127,17 @@ export default {
       this.snackbarText = text
     },
     selectUser(username) {
+      this.selectUserLoading = true
       this.projectDao
         .loadUserRepositoryList(username)
         .then(repositoryList => {
           this.repositoryList = JSON.parse(JSON.stringify(repositoryList))
           this.repositoryList3D = JSON.parse(JSON.stringify(repositoryList))
+          this.selectUserLoading = false
         })
         .catch(error => {
           console.log(error)
+          this.selectUserLoading = false
         })
     },
     updateUrl(username) {

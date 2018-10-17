@@ -9,8 +9,11 @@ class GithubViewThree {
   constructor(containerId) {
     this.containerId = containerId
     // this method need network
-    // this.initScene()
     this.loadFont_()
+  }
+
+  isReady() {
+    return this.font !== undefined
   }
 
   initScene_() {
@@ -53,8 +56,8 @@ class GithubViewThree {
 
   clear() {
     // clear ball & text group
-    this.ballGroup.children.forEach(item => this.ballGroup.remove(item))
-    this.textGroup.children.forEach(item => this.textGroup.remove(item))
+    this.ballGroup.children = []
+    this.textGroup.children = []
   }
 
   animate_() {
