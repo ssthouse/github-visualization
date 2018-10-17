@@ -101,7 +101,6 @@ class GithubViewThree {
       this.charGeoMap.set(char, textGeo)
       this.charWidthMap.set(char, width)
     })
-    console.log(this.charGeoMap)
   }
 
   loadFont_() {
@@ -231,7 +230,7 @@ class GithubViewThree {
     if (!this.virtualElement) {
       this.virtualElement = document.createElement('svg')
     }
-    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
+    this.ballMaterial = new THREE.MeshNormalMaterial()
     const circles = D3.select(this.virtualElement)
       .selectAll('circle')
       .data(this.data)
@@ -261,7 +260,7 @@ class GithubViewThree {
       this.virtualElement = document.createElement('svg')
     }
     const ballMeshList = []
-    this.ballMaterial = new THREE.MeshNormalMaterial({ color: 0x554db6ac })
+    this.ballMaterial = new THREE.MeshNormalMaterial()
     const circles = D3.select(this.virtualElement)
       .selectAll('circle')
       .data(this.data)
