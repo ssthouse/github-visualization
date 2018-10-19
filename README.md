@@ -9,11 +9,11 @@ link:  https://ssthouse.github.io/github-visualization/#/main
 
 ### 效果图 2D / 2D Mode
 
-![demo 2d](https://user-gold-cdn.xitu.io/2018/10/17/16681a0c00933e0b?w=1309&h=836&f=gif&s=4707231)
+![demo 2d](https://raw.githubusercontent.com/ssthouse/d3-blog/master/github-visualization/img/visual-github-repo.gif)
 
 ### 效果图 3D / 3D Mode
 
-![demo 3d](https://user-gold-cdn.xitu.io/2018/10/17/16681a0c00a1e0ce?w=949&h=836&f=gif&s=4248026)
+![demo 3d](https://raw.githubusercontent.com/ssthouse/d3-blog/master/github-visualization/img/3D-effect.gif)
 
 ## Develop
 
