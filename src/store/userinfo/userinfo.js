@@ -2,7 +2,7 @@ const UserInfo = {
   state: {
     username: 'ssthouse',
     avatarUrl:
-      'https://assets-cdn.github.com/images/modules/logos_page/Octocat.png',
+      'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
     follwerUserList: [],
     followingUserList: [],
     repositoryBeanList: []
